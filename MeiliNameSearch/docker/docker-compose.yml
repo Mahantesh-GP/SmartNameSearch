@@ -44,6 +44,19 @@ services:
       # Mount the tools directory into the container so the API can load the nicknames dictionary.
       - ../tools:/app/tools:ro
 
+  namesearch-ui:
+    build:
+      context: ../MeiliNameSearchReact
+      dockerfile: Dockerfile
+    container_name: namesearch-ui
+    environment:
+      # UI will call the API via the relative path configured at /api. nginx will proxy /api to the API service.
+      VITE_API_BASE_PATH: /api
+    ports:
+      - "3000:80"
+    depends_on:
+      - namesearch-api
+
 volumes:
   meili_data:
     driver: local
