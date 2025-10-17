@@ -8,17 +8,22 @@ ENV ASPNETCORE_URLS=http://0.0.0.0:10000
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copy your project folders
-COPY SmartNameSearch/MeiliNameSearch/src/NameSearch.Api/ NameSearch.Api/
-COPY SmartNameSearch/MeiliNameSearch/src/NameSearch.Domain/ NameSearch.Domain/
-COPY SmartNameSearch/MeiliNameSearch/src/NameSearch.Infrastructure/ NameSearch.Infrastructure/
+# 1) Copy only csproj first (better caching)
+COPY MeiliNameSearch/src/NameSearch.Domain/*.csproj NameSearch.Domain/
+COPY MeiliNameSearch/src/NameSearch.Infrastructure/*.csproj NameSearch.Infrastructure/
+COPY MeiliNameSearch/src/NameSearch.Api/*.csproj NameSearch.Api/
 
-# Restore and publish
 RUN dotnet restore NameSearch.Api/NameSearch.Api.csproj
+
+# 2) Copy the rest of the sources
+COPY MeiliNameSearch/src/NameSearch.Domain/ NameSearch.Domain/
+COPY MeiliNameSearch/src/NameSearch.Infrastructure/ NameSearch.Infrastructure/
+COPY MeiliNameSearch/src/NameSearch.Api/ NameSearch.Api/
+
 RUN dotnet publish NameSearch.Api/NameSearch.Api.csproj -c Release -o /app/publish
 
 # ----- Final image -----
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "NameSearch.Api.dll"]
+ENTRYPOINT ["dotnet","NameSearch.Api.dll"]
