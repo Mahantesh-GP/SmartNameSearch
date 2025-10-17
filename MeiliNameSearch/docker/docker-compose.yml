@@ -31,6 +31,8 @@ services:
       MEILI_HOST: http://meilisearch:7700
       # API key used by the API to authenticate with Meilisearch.
       MEILI_API_KEY: dev_key
+      # Run the API in Development so Swagger UI is enabled inside the container.
+      ASPNETCORE_ENVIRONMENT: Development
       # Nicknames dictionary file relative to the application root.
       NICKNAMES_PATH: /app/tools/dictionaries/nicknames.json
     ports:

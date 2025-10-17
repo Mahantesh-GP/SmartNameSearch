@@ -5,20 +5,19 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copy solution files
-COPY ../../NameSearch.Domain/NameSearch.Domain.csproj NameSearch.Domain/
-COPY ../../NameSearch.Infrastructure/NameSearch.Infrastructure.csproj NameSearch.Infrastructure/
-COPY NameSearch.Api.csproj ./
+# Copy csproj files from the build context (src/) so restore can be cached
+COPY NameSearch.Domain/NameSearch.Domain.csproj NameSearch.Domain/
+COPY NameSearch.Infrastructure/NameSearch.Infrastructure.csproj NameSearch.Infrastructure/
+COPY NameSearch.Api/NameSearch.Api.csproj NameSearch.Api/
 
 # Restore as distinct layers to improve build performance.
-RUN dotnet restore NameSearch.Api.csproj
+RUN dotnet restore NameSearch.Api/NameSearch.Api.csproj
 
-# Copy the rest of the code
-COPY ../../NameSearch.Domain ./NameSearch.Domain/
-COPY ../../NameSearch.Infrastructure ./NameSearch.Infrastructure/
+# Copy the rest of the source code
 COPY . .
 
 # Build and publish the application
+WORKDIR /src/NameSearch.Api
 RUN dotnet publish NameSearch.Api.csproj -c Release -o /app/publish
 
 FROM base AS final
