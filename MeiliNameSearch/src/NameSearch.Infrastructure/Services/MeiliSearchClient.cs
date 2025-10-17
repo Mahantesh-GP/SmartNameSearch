@@ -65,6 +65,16 @@ namespace NameSearch.Infrastructure.Services
             var uri = $"/indexes/{indexUid}/search";
             var payload = new { q = query, limit };
             var response = await _httpClient.PostAsJsonAsync(uri, payload, _jsonOptions);
+
+            // If the index does not exist Meilisearch returns 404. Treat this as
+            // an empty result set instead of throwing to avoid surfacing 500 to callers.
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                // Return a minimal empty search result document: { "hits": [], "nbHits": 0 }
+                var emptyJson = "{\"hits\":[],\"nbHits\":0}";
+                return JsonDocument.Parse(emptyJson);
+            }
+
             response.EnsureSuccessStatusCode();
             var stream = await response.Content.ReadAsStreamAsync();
             return await JsonDocument.ParseAsync(stream);

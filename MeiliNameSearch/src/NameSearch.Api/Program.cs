@@ -17,8 +17,9 @@ builder.Services.AddHttpClient<MeiliSearchClient>((serviceProvider, client) =>
     var apiKey = configuration["MEILI_API_KEY"];
     if (!string.IsNullOrWhiteSpace(apiKey))
     {
-        // Meilisearch expects the API key in the X-Meili-API-Key header by default.
-        client.DefaultRequestHeaders.Add("X-Meili-API-Key", apiKey);
+        // Recent Meilisearch versions expect a Bearer token in the Authorization header.
+        // Use System.Net.Http.Headers.AuthenticationHeaderValue to set it.
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
     }
 });
 

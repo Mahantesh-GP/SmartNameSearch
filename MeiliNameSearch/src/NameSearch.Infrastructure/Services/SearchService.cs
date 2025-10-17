@@ -30,6 +30,9 @@ namespace NameSearch.Infrastructure.Services
         /// <param name="limit">The maximum number of results to return.</param>
         public async Task<IReadOnlyList<SearchResult>> SearchAsync(string query, int limit)
         {
+            // Ensure the index exists before searching. This will create the index if missing.
+            await _client.EnsureIndexExistsAsync(IndexName, "id");
+
             var tokens = query.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             var expanded = new List<string>();
             foreach (var token in tokens)
