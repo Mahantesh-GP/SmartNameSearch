@@ -1,0 +1,12 @@
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Domain\bin\Debug\net9.0\NameSearch.Domain.deps.json
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Domain\bin\Debug\net9.0\NameSearch.Domain.dll
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Domain\bin\Debug\net9.0\NameSearch.Domain.pdb
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Domain\obj\Debug\net9.0\NameSearch.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Domain\obj\Debug\net9.0\NameSearch.Domain.AssemblyInfoInputs.cache
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Domain\obj\Debug\net9.0\NameSearch.Domain.AssemblyInfo.cs
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Domain\obj\Debug\net9.0\NameSearch.Domain.csproj.CoreCompileInputs.cache
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Domain\obj\Debug\net9.0\NameSearch.Domain.sourcelink.json
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Domain\obj\Debug\net9.0\NameSearch.Domain.dll
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Domain\obj\Debug\net9.0\refint\NameSearch.Domain.dll
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Domain\obj\Debug\net9.0\NameSearch.Domain.pdb
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Domain\obj\Debug\net9.0\ref\NameSearch.Domain.dll

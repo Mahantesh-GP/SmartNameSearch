@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NameSearch.Domain\NameSearch.Domain.csproj" />
+    <!-- System.Text.Json for serialization/deserialization of Meilisearch requests -->
+    <PackageReference Include="System.Text.Json" Version="8.0.3" />
+    <!-- IConfiguration abstraction for reading configuration values -->
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
+  </ItemGroup>
+</Project>

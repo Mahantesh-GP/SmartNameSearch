@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Meilisearch service providing the search engine backend.
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: meilisearch
+    environment:
+      # Master key required to perform administrative operations such as creating indexes.
+      MEILI_MASTER_KEY: dev_key
+      # Disable analytics collection for local development.
+      MEILI_NO_ANALYTICS: 'true'
+    ports:
+      # Expose Meilisearch on the host so the API can connect to it.
+      - "7700:7700"
+    volumes:
+      # Persist Meilisearch data across restarts.
+      - meili_data:/data.ms
+
+  # ASP.NET Core Web API that implements the phonetic name search service.
+  namesearch-api:
+    build:
+      # Use the parent src directory as the build context so that Domain and Infrastructure
+      # projects are available during the Docker build. The Dockerfile resides in
+      # the NameSearch.Api project folder.
+      context: ../src
+      dockerfile: NameSearch.Api/Dockerfile
+    container_name: namesearch-api
+    environment:
+      # Base address of the Meilisearch instance to connect to.
+      MEILI_HOST: http://meilisearch:7700
+      # API key used by the API to authenticate with Meilisearch.
+      MEILI_API_KEY: dev_key
+      # Nicknames dictionary file relative to the application root.
+      NICKNAMES_PATH: /app/tools/dictionaries/nicknames.json
+    ports:
+      # Expose the API on a host port so it can be called from the browser or other clients.
+      - "5000:8080"
+    depends_on:
+      - meilisearch
+    volumes:
+      # Mount the tools directory into the container so the API can load the nicknames dictionary.
+      - ../tools:/app/tools:ro
+
+volumes:
+  meili_data:
+    driver: local

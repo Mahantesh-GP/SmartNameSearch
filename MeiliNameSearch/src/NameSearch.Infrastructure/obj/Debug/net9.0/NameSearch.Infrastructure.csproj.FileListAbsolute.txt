@@ -1,0 +1,16 @@
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\obj\Debug\net9.0\NameSearch.Infrastructure.csproj.AssemblyReference.cache
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\obj\Debug\net9.0\NameSearch.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\obj\Debug\net9.0\NameSearch.Infrastructure.AssemblyInfoInputs.cache
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\obj\Debug\net9.0\NameSearch.Infrastructure.AssemblyInfo.cs
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\obj\Debug\net9.0\NameSearch.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\obj\Debug\net9.0\NameSearch.Infrastructure.sourcelink.json
+c:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\bin\Debug\net9.0\NameSearch.Infrastructure.deps.json
+c:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\bin\Debug\net9.0\NameSearch.Infrastructure.dll
+c:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\bin\Debug\net9.0\NameSearch.Infrastructure.pdb
+c:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\bin\Debug\net9.0\NameSearch.Domain.dll
+c:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\bin\Debug\net9.0\NameSearch.Domain.pdb
+c:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\obj\Debug\net9.0\NameSear.C5AF7C1E.Up2Date
+c:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\obj\Debug\net9.0\NameSearch.Infrastructure.dll
+c:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\obj\Debug\net9.0\refint\NameSearch.Infrastructure.dll
+c:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\obj\Debug\net9.0\NameSearch.Infrastructure.pdb
+c:\Learnings\SmartNameSearch\MeiliNameSearch\src\NameSearch.Infrastructure\obj\Debug\net9.0\ref\NameSearch.Infrastructure.dll

@@ -1,0 +1,28 @@
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+WORKDIR /app
+EXPOSE 8080
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Copy solution files
+COPY ../../NameSearch.Domain/NameSearch.Domain.csproj NameSearch.Domain/
+COPY ../../NameSearch.Infrastructure/NameSearch.Infrastructure.csproj NameSearch.Infrastructure/
+COPY NameSearch.Api.csproj ./
+
+# Restore as distinct layers to improve build performance.
+RUN dotnet restore NameSearch.Api.csproj
+
+# Copy the rest of the code
+COPY ../../NameSearch.Domain ./NameSearch.Domain/
+COPY ../../NameSearch.Infrastructure ./NameSearch.Infrastructure/
+COPY . .
+
+# Build and publish the application
+RUN dotnet publish NameSearch.Api.csproj -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+
+ENTRYPOINT ["dotnet", "NameSearch.Api.dll"]
