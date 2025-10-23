@@ -4,12 +4,6 @@ This repository contains a sample implementation of a **phonetic name search** s
 
 ## ✨ Features
 
-- **Phonetic matching** – names are converted to **Double Metaphone** codes so that similarly pronounced names (e.g. *Smith* and *Smyth*) return the same results.
-- **Nickname expansion** – common nicknames are expanded to their formal equivalents (e.g. *Liz* → *Elizabeth*, *Bob* → *Robert*) using a simple JSON dictionary.
-- **Fuzzy matching** – Meilisearch’s built‑in typo‑tolerance is used to match minor spelling mistakes.
-- **Modular architecture** – the solution is split into **API**, **Domain** and **Infrastructure** projects to keep concerns separated.
-- **Docker support** – a `docker-compose.yml` is provided to spin up Meilisearch and the API together.
-- **Unit tests** – a minimal test project ensures the infrastructure components (e.g. phonetic encoding) behave as expected.
 
 ## 🧱 Architecture
 
@@ -102,3 +96,4 @@ The current implementation provides a minimal scaffolding.  To turn this into a 
 5. **Deploy to the cloud:** Use services like Railway, Render or Fly.io to host both Meilisearch and the API for free (or nearly free) as part of a learning portfolio.
 
 Feel free to modify the code to suit your own use cases and experiments.  Contributions are welcome!# SmartNameSearch
+![CI](https://github.com/Mahantesh-GP/SmartNameSearch/actions/workflows/deploy-react.yml/badge.svg)
