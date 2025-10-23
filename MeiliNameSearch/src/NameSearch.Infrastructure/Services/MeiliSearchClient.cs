@@ -79,5 +79,23 @@ namespace NameSearch.Infrastructure.Services
             var stream = await response.Content.ReadAsStreamAsync();
             return await JsonDocument.ParseAsync(stream);
         }
+
+        /// <summary>
+        /// Returns the raw JSON stats for the specified index (documents count, etc.).
+        /// If the index does not exist returns a minimal object with zero counts.
+        /// </summary>
+        public async Task<JsonDocument> GetIndexStatsAsync(string indexUid)
+        {
+            var uri = $"/indexes/{indexUid}/stats";
+            var response = await _httpClient.GetAsync(uri);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                var empty = "{ \"numberOfDocuments\": 0 }";
+                return JsonDocument.Parse(empty);
+            }
+            response.EnsureSuccessStatusCode();
+            var stream = await response.Content.ReadAsStreamAsync();
+            return await JsonDocument.ParseAsync(stream);
+        }
     }
 }

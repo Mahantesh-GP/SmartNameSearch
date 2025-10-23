@@ -3,6 +3,7 @@ using NameSearch.Domain.Entities;
 using NameSearch.Infrastructure.Services;
 using NameSearch.Infrastructure.Models;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace NameSearch.Api.Controllers
 {
@@ -184,6 +185,26 @@ namespace NameSearch.Api.Controllers
                 var status = jobTracker.GetStatus(id);
                 if (status == null) return NotFound();
                 return Ok(new { Id = id, Status = status });
+            }
+
+            /// <summary>
+            /// Returns simple stats for the 'persons' index in Meilisearch (e.g. document count).
+            /// Useful for quick debugging from Swagger or the browser.
+            /// </summary>
+            [HttpGet("index-stats")]
+            public async Task<IActionResult> IndexStats()
+            {
+                try
+                {
+                    var meili = HttpContext.RequestServices.GetRequiredService<NameSearch.Infrastructure.Services.MeiliSearchClient>();
+                    var json = await meili.GetIndexStatsAsync("persons");
+                    return Ok(JsonSerializer.Deserialize<object>(json.RootElement.GetRawText()));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to fetch index stats");
+                    return StatusCode(500, "Failed to fetch index stats");
+                }
             }
     }
 }

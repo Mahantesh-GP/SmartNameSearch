@@ -42,23 +42,34 @@ builder.Services.AddSingleton<DoubleMetaphone>();
 builder.Services.AddScoped<IndexService>();
 builder.Services.AddScoped<SearchService>();
 
+// Configure CORS using ALLOWED_ORIGINS env var (semicolon-separated). Provide sensible defaults
+// so the frontend (GitHub Pages, Render static site, or local Vite) can reach the API.
+var configuration = builder.Configuration;
+var allowedOriginsEnv = configuration["ALLOWED_ORIGINS"];
+var allowedOrigins = (string.IsNullOrWhiteSpace(allowedOriginsEnv)
+    ? new[] { "https://mahantesh-gp.github.io", "https://smartnamesearch.onrender.com", "http://localhost:5173" }
+    : allowedOriginsEnv.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+
 // Enable API documentation (Swagger) in development environments.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(o => o.AddPolicy("ui", p =>
-  p.WithOrigins("https://mahantesh-gp.github.io", "https://mahantesh-gp.github.io/SmartNameSearch")
-   .AllowAnyHeader()
-   .AllowAnyMethod()
-   .AllowCredentials()
+    p.WithOrigins(allowedOrigins)
+     .AllowAnyHeader()
+     .AllowAnyMethod()
+     .AllowCredentials()
 ));
-
-
-
 
 var app = builder.Build();
 app.UseCors("ui");
-// Only expose Swagger in development.
-if (app.Environment.IsDevelopment())
+
+// If you want to verify which origins are allowed at runtime, uncomment the line below (for debugging):
+// Console.WriteLine($"Allowed CORS origins: {string.Join(', ', allowedOrigins)}");
+// Expose Swagger when running in Development, or when the ENABLE_SWAGGER env var is set to true.
+var enableSwaggerEnv = configuration["ENABLE_SWAGGER"];
+var enableSwagger = app.Environment.IsDevelopment()
+    || (bool.TryParse(enableSwaggerEnv, out var parsed) && parsed);
+if (enableSwagger)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
