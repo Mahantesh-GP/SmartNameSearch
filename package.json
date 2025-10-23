@@ -1,0 +1,14 @@
+{
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  },
+  "homepage": "https://Mahantesh-GP.github.io/<repo>",
+"scripts": {
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d dist",
+  "build": "vite build",
+  "dev": "vite",
+  "preview": "vite preview"
+}
+
+}
