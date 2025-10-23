@@ -23,6 +23,19 @@ builder.Services.AddHttpClient<MeiliSearchClient>((serviceProvider, client) =>
     }
 });
 
+// Named HttpClient for external sample data fetches (randomuser.me)
+builder.Services.AddHttpClient("randomuser", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
+// Background task queue and hosted service for long-running indexing jobs
+builder.Services.AddSingleton<NameSearch.Api.Background.IBackgroundTaskQueue, NameSearch.Api.Background.BackgroundTaskQueue>();
+builder.Services.AddHostedService<NameSearch.Api.Background.QueuedHostedService>();
+
+// Simple in-memory job tracker
+builder.Services.AddSingleton<NameSearch.Api.Background.JobTracker>();
+
 // Register custom services.
 builder.Services.AddSingleton<NicknameProvider>();
 builder.Services.AddSingleton<DoubleMetaphone>();

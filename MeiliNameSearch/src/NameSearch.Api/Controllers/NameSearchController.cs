@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using NameSearch.Domain.Entities;
 using NameSearch.Infrastructure.Services;
 using NameSearch.Infrastructure.Models;
+using Microsoft.Extensions.Logging;
 
 namespace NameSearch.Api.Controllers
 {
@@ -11,11 +12,15 @@ namespace NameSearch.Api.Controllers
     {
         private readonly IndexService _indexService;
         private readonly SearchService _searchService;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger<NameSearchController> _logger;
 
-        public NameSearchController(IndexService indexService, SearchService searchService)
+        public NameSearchController(IndexService indexService, SearchService searchService, IHttpClientFactory httpClientFactory, ILogger<NameSearchController> logger)
         {
             _indexService = indexService;
             _searchService = searchService;
+            _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
 
         /// <summary>
@@ -68,5 +73,117 @@ namespace NameSearch.Api.Controllers
             );
             return Ok(sample);
         }
+
+        /// <summary>
+        /// Fetches sample people from randomuser.me and indexes them in bulk.
+        /// Useful for seeding the development index with realistic-looking data.
+        /// </summary>
+        /// <param name="count">Number of sample users to fetch (max 5000).</param>
+        [HttpPost("bulk-index-from-randomuser")]
+        public async Task<IActionResult> BulkIndexFromRandomUser([FromQuery] int count = 100)
+        {
+            if (count <= 0) return BadRequest("Count must be > 0");
+            if (count > 5000) return BadRequest("Count must be <= 5000");
+
+            var url = $"https://randomuser.me/api/?results={count}&nat=us";
+                try
+                {
+                    var client = _httpClientFactory.CreateClient("randomuser");
+                    var resp = await client.GetAsync(url);
+                    if (!resp.IsSuccessStatusCode) return StatusCode((int)resp.StatusCode, "Failed to fetch sample data");
+                    var json = await resp.Content.ReadAsStringAsync();
+                    using var doc = System.Text.Json.JsonDocument.Parse(json);
+                    var list = new List<NameSearch.Domain.Entities.PersonRecord>();
+                    var results = doc.RootElement.GetProperty("results");
+                    foreach (var item in results.EnumerateArray())
+                    {
+                        var id = item.GetProperty("login").GetProperty("uuid").GetString() ?? Guid.NewGuid().ToString();
+                        var name = item.GetProperty("name");
+                        var location = item.GetProperty("location");
+                        var dob = item.GetProperty("dob").GetProperty("date").GetString();
+                        var pr = new NameSearch.Domain.Entities.PersonRecord(
+                            Id: id,
+                            FirstName: name.GetProperty("first").GetString() ?? string.Empty,
+                            LastName: name.GetProperty("last").GetString() ?? string.Empty,
+                            MiddleName: null,
+                            City: location.GetProperty("city").GetString() ?? string.Empty,
+                            State: location.GetProperty("state").GetString() ?? string.Empty,
+                            Dob: DateTime.TryParse(dob, out var d) ? d : (DateTime?)null
+                        );
+                        list.Add(pr);
+                    }
+
+                    var indexed = await _indexService.IndexRecordsAsync(list);
+                    return Ok(new { Indexed = indexed });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Bulk indexing from randomuser failed");
+                    return StatusCode(500, "Bulk indexing failed");
+                }
+        }
+
+            /// <summary>
+            /// Enqueue a background bulk index job (returns job id immediately).
+            /// </summary>
+            [HttpPost("enqueue-bulk-index")]
+            public async Task<IActionResult> EnqueueBulkIndex([FromQuery] int count = 100)
+            {
+                if (count <= 0 || count > 5000) return BadRequest("Count must be 1..5000");
+                var jobId = Guid.NewGuid().ToString();
+                var jobTracker = HttpContext.RequestServices.GetRequiredService<NameSearch.Api.Background.JobTracker>();
+                var queue = HttpContext.RequestServices.GetRequiredService<NameSearch.Api.Background.IBackgroundTaskQueue>();
+                jobTracker.SetStatus(jobId, "Queued");
+                await queue.QueueBackgroundWorkItemAsync(async ct =>
+                {
+                    try
+                    {
+                        jobTracker.SetStatus(jobId, "Running");
+                        // Reuse the existing controller method to perform the work by calling the service directly.
+                        var url = $"https://randomuser.me/api/?results={count}&nat=us";
+                        var client = _httpClientFactory.CreateClient("randomuser");
+                        var resp = await client.GetAsync(url, ct);
+                        resp.EnsureSuccessStatusCode();
+                        var json = await resp.Content.ReadAsStringAsync(ct);
+                        using var doc = System.Text.Json.JsonDocument.Parse(json);
+                        var list = new List<NameSearch.Domain.Entities.PersonRecord>();
+                        var results = doc.RootElement.GetProperty("results");
+                        foreach (var item in results.EnumerateArray())
+                        {
+                            var id = item.GetProperty("login").GetProperty("uuid").GetString() ?? Guid.NewGuid().ToString();
+                            var name = item.GetProperty("name");
+                            var location = item.GetProperty("location");
+                            var dob = item.GetProperty("dob").GetProperty("date").GetString();
+                            var pr = new NameSearch.Domain.Entities.PersonRecord(
+                                Id: id,
+                                FirstName: name.GetProperty("first").GetString() ?? string.Empty,
+                                LastName: name.GetProperty("last").GetString() ?? string.Empty,
+                                MiddleName: null,
+                                City: location.GetProperty("city").GetString() ?? string.Empty,
+                                State: location.GetProperty("state").GetString() ?? string.Empty,
+                                Dob: DateTime.TryParse(dob, out var d) ? d : (DateTime?)null
+                            );
+                            list.Add(pr);
+                        }
+                        await _indexService.IndexRecordsAsync(list);
+                        jobTracker.SetStatus(jobId, $"Completed: {list.Count}");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Background bulk index failed");
+                        jobTracker.SetStatus(jobId, "Failed");
+                    }
+                });
+                return Accepted(new { JobId = jobId });
+            }
+
+            [HttpGet("job-status/{id}")]
+            public IActionResult JobStatus(string id)
+            {
+                var jobTracker = HttpContext.RequestServices.GetRequiredService<NameSearch.Api.Background.JobTracker>();
+                var status = jobTracker.GetStatus(id);
+                if (status == null) return NotFound();
+                return Ok(new { Id = id, Status = status });
+            }
     }
 }

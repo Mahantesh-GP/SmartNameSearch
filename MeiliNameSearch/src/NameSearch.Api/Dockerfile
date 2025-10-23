@@ -24,4 +24,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
-ENTRYPOINT ["dotnet", "NameSearch.Api.dll"]
+ENV ASPNETCORE_URLS="http://0.0.0.0:8080"
+ENTRYPOINT ["sh", "-c", "dotnet NameSearch.Api.dll --urls http://0.0.0.0:$PORT"]
