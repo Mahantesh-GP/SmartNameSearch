@@ -95,5 +95,10 @@ The current implementation provides a minimal scaffolding.  To turn this into a 
 4. **Implement a UI:** Create a simple frontend (e.g., with Blazor or React) to query the API and visualize results and scores.
 5. **Deploy to the cloud:** Use services like Railway, Render or Fly.io to host both Meilisearch and the API for free (or nearly free) as part of a learning portfolio.
 
+      <img width="1801" height="917" alt="image" src="https://github.com/user-attachments/assets/bb1d2772-6a30-4e98-aa5f-108ac7d987b9" />
+      
+      <img width="1147" height="613" alt="image" src="https://github.com/user-attachments/assets/4d10aaf6-32a9-4184-b085-621b10177287" />
+
+
 Feel free to modify the code to suit your own use cases and experiments.  Contributions are welcome!# SmartNameSearch
 ![CI](https://github.com/Mahantesh-GP/SmartNameSearch/actions/workflows/deploy-react.yml/badge.svg)
