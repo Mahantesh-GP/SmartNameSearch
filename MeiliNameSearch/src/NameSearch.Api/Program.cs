@@ -32,9 +32,17 @@ builder.Services.AddScoped<SearchService>();
 // Enable API documentation (Swagger) in development environments.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(o => o.AddPolicy("ui", p =>
+  p.WithOrigins("https://mahantesh-gp.github.io", "https://mahantesh-gp.github.io/SmartNameSearch")
+   .AllowAnyHeader()
+   .AllowAnyMethod()
+   .AllowCredentials()
+));
+
+
 
 var app = builder.Build();
-
+app.UseCors("ui");
 // Only expose Swagger in development.
 if (app.Environment.IsDevelopment())
 {
