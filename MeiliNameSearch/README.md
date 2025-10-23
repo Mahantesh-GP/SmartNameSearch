@@ -91,6 +91,17 @@ MeiliNameSearch/
 └── README.md                        # This file
 ```
 
+🧭 Understanding the flow
+
+The ASP.NET Core host is configured in Program.cs. At startup it registers an HttpClient pointed at your Meilisearch container (using MEILI_HOST and MEILI_API_KEY environment variables) and adds services for nickname lookup and phonetic encoding.
+
+Indexing (POST /NameSearch/index): The IndexService takes each PersonRecord, looks up nicknames via NicknameProvider (which loads its dictionary from tools/dictionaries/nicknames.json), computes simple Double‑Metaphone keys, and builds a token list. It then ensures the persons index exists in Meilisearch and sends the documents via MeiliSearchClient.
+
+Searching (GET /NameSearch/search): The SearchService splits the query into tokens, expands each token with nicknames, deduplicates them, and performs a search via Meilisearch. The returned JSON is parsed back into your domain model with a relevance score.
+
+The sample GET /NameSearch/example endpoint is just a convenience to verify the API works; it doesn’t query Meilisearch.
+
+
 ## 🔨 Next steps and improvements
 
 The current implementation provides a minimal scaffolding.  To turn this into a fully featured service you can:
