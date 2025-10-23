@@ -2,13 +2,13 @@
   "devDependencies": {
     "gh-pages": "^6.3.0"
   },
-  "homepage": "https://Mahantesh-GP.github.io/<repo>",
-"scripts": {
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d dist",
-  "build": "vite build",
-  "dev": "vite",
-  "preview": "vite preview"
-}
+  "homepage": "https://Mahantesh-GP.github.io/SmartNameSearch",
+  "scripts": {
+    "predeploy": "cd MeiliNameSearch/MeiliNameSearchReact && npm run build",
+    "deploy": "npx gh-pages -d MeiliNameSearch/MeiliNameSearchReact/dist",
+    "build": "cd MeiliNameSearch/MeiliNameSearchReact && npm run build",
+    "dev": "cd MeiliNameSearch/MeiliNameSearchReact && npm run dev",
+    "preview": "cd MeiliNameSearch/MeiliNameSearchReact && npm run preview"
+  }
 
 }

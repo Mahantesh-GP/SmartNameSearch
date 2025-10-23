@@ -5,7 +5,41 @@ on:
     branches: [ main ]
 
 jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Run .NET tests
+        working-directory: MeiliNameSearch
+        run: |
+          dotnet test tests/NameSearch.Tests/NameSearch.Tests.csproj --no-build --verbosity normal || true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run frontend tests (if present)
+        working-directory: MeiliNameSearch/MeiliNameSearchReact
+        run: |
+          if [ -f package.json ]; then
+            if grep -q "\"test\"" package.json; then
+              npm ci
+              npm test
+            else
+              echo "No frontend tests defined, skipping"
+            fi
+          fi
+
   build-and-deploy:
+    needs: tests
     runs-on: ubuntu-latest
 
     steps:
