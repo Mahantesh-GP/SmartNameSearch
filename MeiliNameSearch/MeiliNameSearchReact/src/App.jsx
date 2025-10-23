@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 
-// Base path for the NameSearch API. Use the Vite env var when available; otherwise default to '/api'.
-// When running in Docker with the nginx UI proxy, the UI should call relative paths under /api.
-const apiBasePath = import.meta.env.VITE_API_BASE_PATH || '/api';
+// Base path for the NameSearch API. Prefer the Vite env var `VITE_API_BASE_URL` (set to
+// the full API host, e.g. https://smartnamesearch.onrender.com). Fall back to the older
+// `VITE_API_BASE_PATH` or to '/api' for local/docker proxying.
+const apiBasePath = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_BASE_PATH || '/api';
 
 function App() {
   const [query, setQuery] = useState('');
