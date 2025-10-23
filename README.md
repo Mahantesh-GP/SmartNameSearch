@@ -16,7 +16,7 @@ The solution is organized into the following projects:
 | **NameSearch.Infrastructure** | Infrastructure services (Meilisearch client, indexing, search, phonetic encoding, nickname expansion). |
 | **tests/NameSearch.Tests** | xUnit tests for the infrastructure components. |
 | **docker** | Contains `docker-compose.yml` to run Meilisearch and the API together. |
-| **tools** | Contains a sample `nicknames.json` dictionary used for nickname expansion. |
+| **tools** | Contains a sample `https://randomuser.me/api/?results` api used for nickname expansion. |
 
 ## ⚙️ Prerequisites
 
