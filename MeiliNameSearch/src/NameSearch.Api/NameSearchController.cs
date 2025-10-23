@@ -5,7 +5,7 @@ using NameSearch.Infrastructure.Models;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
-namespace NameSearch.Api.Controllers
+namespace NameSearch.Api
 {
     [ApiController]
     [Route("[controller]")]
@@ -93,8 +93,8 @@ namespace NameSearch.Api.Controllers
                     var resp = await client.GetAsync(url);
                     if (!resp.IsSuccessStatusCode) return StatusCode((int)resp.StatusCode, "Failed to fetch sample data");
                     var json = await resp.Content.ReadAsStringAsync();
-                    using var doc = System.Text.Json.JsonDocument.Parse(json);
-                    var list = new List<NameSearch.Domain.Entities.PersonRecord>();
+                    using var doc = JsonDocument.Parse(json);
+                    var list = new List<PersonRecord>();
                     var results = doc.RootElement.GetProperty("results");
                     foreach (var item in results.EnumerateArray())
                     {
@@ -102,14 +102,14 @@ namespace NameSearch.Api.Controllers
                         var name = item.GetProperty("name");
                         var location = item.GetProperty("location");
                         var dob = item.GetProperty("dob").GetProperty("date").GetString();
-                        var pr = new NameSearch.Domain.Entities.PersonRecord(
+                        var pr = new PersonRecord(
                             Id: id,
                             FirstName: name.GetProperty("first").GetString() ?? string.Empty,
                             LastName: name.GetProperty("last").GetString() ?? string.Empty,
                             MiddleName: null,
                             City: location.GetProperty("city").GetString() ?? string.Empty,
                             State: location.GetProperty("state").GetString() ?? string.Empty,
-                            Dob: DateTime.TryParse(dob, out var d) ? d : (DateTime?)null
+                            Dob: DateTime.TryParse(dob, out var d) ? d : null
                         );
                         list.Add(pr);
                     }
@@ -132,8 +132,8 @@ namespace NameSearch.Api.Controllers
             {
                 if (count <= 0 || count > 5000) return BadRequest("Count must be 1..5000");
                 var jobId = Guid.NewGuid().ToString();
-                var jobTracker = HttpContext.RequestServices.GetRequiredService<NameSearch.Api.Background.JobTracker>();
-                var queue = HttpContext.RequestServices.GetRequiredService<NameSearch.Api.Background.IBackgroundTaskQueue>();
+                var jobTracker = HttpContext.RequestServices.GetRequiredService<Background.JobTracker>();
+                var queue = HttpContext.RequestServices.GetRequiredService<Background.IBackgroundTaskQueue>();
                 jobTracker.SetStatus(jobId, "Queued");
                 await queue.QueueBackgroundWorkItemAsync(async ct =>
                 {
@@ -146,8 +146,8 @@ namespace NameSearch.Api.Controllers
                         var resp = await client.GetAsync(url, ct);
                         resp.EnsureSuccessStatusCode();
                         var json = await resp.Content.ReadAsStringAsync(ct);
-                        using var doc = System.Text.Json.JsonDocument.Parse(json);
-                        var list = new List<NameSearch.Domain.Entities.PersonRecord>();
+                        using var doc = JsonDocument.Parse(json);
+                        var list = new List<PersonRecord>();
                         var results = doc.RootElement.GetProperty("results");
                         foreach (var item in results.EnumerateArray())
                         {
@@ -155,14 +155,14 @@ namespace NameSearch.Api.Controllers
                             var name = item.GetProperty("name");
                             var location = item.GetProperty("location");
                             var dob = item.GetProperty("dob").GetProperty("date").GetString();
-                            var pr = new NameSearch.Domain.Entities.PersonRecord(
+                            var pr = new PersonRecord(
                                 Id: id,
                                 FirstName: name.GetProperty("first").GetString() ?? string.Empty,
                                 LastName: name.GetProperty("last").GetString() ?? string.Empty,
                                 MiddleName: null,
                                 City: location.GetProperty("city").GetString() ?? string.Empty,
                                 State: location.GetProperty("state").GetString() ?? string.Empty,
-                                Dob: DateTime.TryParse(dob, out var d) ? d : (DateTime?)null
+                                Dob: DateTime.TryParse(dob, out var d) ? d : null
                             );
                             list.Add(pr);
                         }
@@ -181,7 +181,7 @@ namespace NameSearch.Api.Controllers
             [HttpGet("job-status/{id}")]
             public IActionResult JobStatus(string id)
             {
-                var jobTracker = HttpContext.RequestServices.GetRequiredService<NameSearch.Api.Background.JobTracker>();
+                var jobTracker = HttpContext.RequestServices.GetRequiredService<Background.JobTracker>();
                 var status = jobTracker.GetStatus(id);
                 if (status == null) return NotFound();
                 return Ok(new { Id = id, Status = status });
@@ -196,7 +196,7 @@ namespace NameSearch.Api.Controllers
             {
                 try
                 {
-                    var meili = HttpContext.RequestServices.GetRequiredService<NameSearch.Infrastructure.Services.MeiliSearchClient>();
+                    var meili = HttpContext.RequestServices.GetRequiredService<MeiliSearchClient>();
                     var json = await meili.GetIndexStatsAsync("persons");
                     return Ok(JsonSerializer.Deserialize<object>(json.RootElement.GetRawText()));
                 }
