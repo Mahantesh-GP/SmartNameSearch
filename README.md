@@ -92,8 +92,7 @@ The current implementation provides a minimal scaffolding.  To turn this into a 
 1. **Complete the indexing logic:** Extend `IndexService` to generate comprehensive phonetic keys and nickname expansions.
 2. **Enhance search ranking:** Adjust ranking rules and synonyms in Meilisearch to produce more relevant results.
 3. **Add hybrid search:** Combine full‑text and vector search by computing embeddings (e.g., using a local model via [Ollama](https://ollama.ai/)) and storing them in Meilisearch’s vector field.
-4. **Implement a UI:** Create a simple frontend (e.g., with Blazor or React) to query the API and visualize results and scores.
-5. **Deploy to the cloud:** Use services like Railway, Render or Fly.io to host both Meilisearch and the API for free (or nearly free) as part of a learning portfolio.
+
 
       <img width="1801" height="917" alt="image" src="https://github.com/user-attachments/assets/bb1d2772-6a30-4e98-aa5f-108ac7d987b9" />
       
