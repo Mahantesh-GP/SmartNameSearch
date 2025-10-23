@@ -90,8 +90,34 @@ namespace NameSearch.Api
                 try
                 {
                     var client = _httpClientFactory.CreateClient("randomuser");
-                    var resp = await client.GetAsync(url);
-                    if (!resp.IsSuccessStatusCode) return StatusCode((int)resp.StatusCode, "Failed to fetch sample data");
+                    HttpResponseMessage resp;
+                    try
+                    {
+                        resp = await client.GetAsync(url);
+                    }
+                    catch (HttpRequestException httpEx)
+                    {
+                        // Log full exception details for network/HTTP errors
+                        _logger.LogError(httpEx, "HTTP request to randomuser failed: {Message}", httpEx.ToString());
+                        return StatusCode(502, "Failed to fetch sample data: network error");
+                    }
+
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        string body = string.Empty;
+                        try
+                        {
+                            body = await resp.Content.ReadAsStringAsync();
+                        }
+                        catch (Exception readEx)
+                        {
+                            _logger.LogWarning(readEx, "Failed to read error response body from randomuser");
+                        }
+
+                        _logger.LogWarning("RandomUser API returned non-success status {StatusCode}. Response body: {Body}", (int)resp.StatusCode, body);
+                        return StatusCode((int)resp.StatusCode, "Failed to fetch sample data");
+                    }
+
                     var json = await resp.Content.ReadAsStringAsync();
                     using var doc = JsonDocument.Parse(json);
                     var list = new List<PersonRecord>();
@@ -119,7 +145,8 @@ namespace NameSearch.Api
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Bulk indexing from randomuser failed");
+                    // Ensure full exception details are logged
+                    _logger.LogError(ex, "Bulk indexing from randomuser failed: {Exception}", ex.ToString());
                     return StatusCode(500, "Bulk indexing failed");
                 }
         }
@@ -143,8 +170,35 @@ namespace NameSearch.Api
                         // Reuse the existing controller method to perform the work by calling the service directly.
                         var url = $"https://randomuser.me/api/?results={count}&nat=us";
                         var client = _httpClientFactory.CreateClient("randomuser");
-                        var resp = await client.GetAsync(url, ct);
-                        resp.EnsureSuccessStatusCode();
+                        HttpResponseMessage resp;
+                        try
+                        {
+                            resp = await client.GetAsync(url, ct);
+                        }
+                        catch (HttpRequestException httpEx)
+                        {
+                            _logger.LogError(httpEx, "Background HTTP request to randomuser failed: {Message}", httpEx.ToString());
+                            jobTracker.SetStatus(jobId, "Failed");
+                            return;
+                        }
+
+                        if (!resp.IsSuccessStatusCode)
+                        {
+                            string body = string.Empty;
+                            try
+                            {
+                                body = await resp.Content.ReadAsStringAsync(ct);
+                            }
+                            catch (Exception readEx)
+                            {
+                                _logger.LogWarning(readEx, "Failed to read background error response body from randomuser");
+                            }
+
+                            _logger.LogWarning("Background RandomUser API returned non-success status {StatusCode}. Response body: {Body}", (int)resp.StatusCode, body);
+                            jobTracker.SetStatus(jobId, "Failed");
+                            return;
+                        }
+
                         var json = await resp.Content.ReadAsStringAsync(ct);
                         using var doc = JsonDocument.Parse(json);
                         var list = new List<PersonRecord>();

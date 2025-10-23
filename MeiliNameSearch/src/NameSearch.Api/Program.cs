@@ -12,13 +12,12 @@ builder.Services.AddControllers();
 builder.Services.AddHttpClient<MeiliSearchClient>((serviceProvider, client) =>
 {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-    var host = configuration["MEILI_HOST"] ?? "https://smartnamesearch.onrender.com";
+    var host = configuration["MEILI_HOST"] ?? "https://meilisearch-latest-mhph.onrender.com/";
     client.BaseAddress = new Uri(host);
     var apiKey = "f366fe5896d3f3ef6713d68ed59ef829";
     if (!string.IsNullOrWhiteSpace(apiKey))
     {
-        // Recent Meilisearch versions expect a Bearer token in the Authorization header.
-        // Use System.Net.Http.Headers.AuthenticationHeaderValue to set it.
+        // Meilisearch expects the API key in the X-Meili-API-Key header by default.
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
     }
 });
