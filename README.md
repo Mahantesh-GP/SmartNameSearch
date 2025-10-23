@@ -16,7 +16,7 @@ The solution is organized into the following projects:
 | **NameSearch.Infrastructure** | Infrastructure services (Meilisearch client, indexing, search, phonetic encoding, nickname expansion). |
 | **tests/NameSearch.Tests** | xUnit tests for the infrastructure components. |
 | **docker** | Contains `docker-compose.yml` to run Meilisearch and the API together. |
-| **tools** | Contains a sample `nicknames.json` dictionary used for nickname expansion. |
+| **tools** | Contains a sample `https://randomuser.me/api/?results` api used for nickname expansion. |
 
 ## ⚙️ Prerequisites
 
@@ -29,7 +29,7 @@ The solution is organized into the following projects:
 1. **Clone this repository** and navigate into it:
 
    ```bash
-   git clone <your fork>
+   git clone https://github.com/Mahantesh-GP/SmartNameSearch.git
    cd MeiliNameSearch
    ```
 
@@ -92,8 +92,12 @@ The current implementation provides a minimal scaffolding.  To turn this into a 
 1. **Complete the indexing logic:** Extend `IndexService` to generate comprehensive phonetic keys and nickname expansions.
 2. **Enhance search ranking:** Adjust ranking rules and synonyms in Meilisearch to produce more relevant results.
 3. **Add hybrid search:** Combine full‑text and vector search by computing embeddings (e.g., using a local model via [Ollama](https://ollama.ai/)) and storing them in Meilisearch’s vector field.
-4. **Implement a UI:** Create a simple frontend (e.g., with Blazor or React) to query the API and visualize results and scores.
-5. **Deploy to the cloud:** Use services like Railway, Render or Fly.io to host both Meilisearch and the API for free (or nearly free) as part of a learning portfolio.
+
+
+      <img width="1801" height="917" alt="image" src="https://github.com/user-attachments/assets/bb1d2772-6a30-4e98-aa5f-108ac7d987b9" />
+      
+      <img width="1147" height="613" alt="image" src="https://github.com/user-attachments/assets/4d10aaf6-32a9-4184-b085-621b10177287" />
+
 
 Feel free to modify the code to suit your own use cases and experiments.  Contributions are welcome!# SmartNameSearch
 ![CI](https://github.com/Mahantesh-GP/SmartNameSearch/actions/workflows/deploy-react.yml/badge.svg)
