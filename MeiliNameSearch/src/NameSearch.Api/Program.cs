@@ -36,8 +36,12 @@ builder.Services.AddHostedService<NameSearch.Api.Background.QueuedHostedService>
 builder.Services.AddSingleton<NameSearch.Api.Background.JobTracker>();
 
 // Register custom services.
-builder.Services.AddSingleton<NicknameProvider>();
-builder.Services.AddSingleton<DoubleMetaphone>();
+builder.Services.AddSingleton<IPhoneticEncoder>(_ => new DoubleMetaphoneEncoder(useAlternate: true, maxCodeLen: 4));
+builder.Services.AddSingleton<INicknameProvider>(_ =>
+{
+    var path = builder.Configuration["NICKNAMES_PATH"];
+    return new NicknameProvider(path);
+});
 builder.Services.AddScoped<IndexService>();
 builder.Services.AddScoped<SearchService>();
 

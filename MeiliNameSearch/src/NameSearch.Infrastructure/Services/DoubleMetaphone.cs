@@ -1,27 +1,32 @@
+using Lucene.Net.Analysis.Phonetic.Language;
+
 namespace NameSearch.Infrastructure.Services
 {
-    /// <summary>
-    /// Placeholder implementation of the Double Metaphone algorithm. In a production
-    /// implementation you would replace this with a full implementation that
-    /// calculates primary and secondary phonetic keys for a given word. For the
-    /// purposes of this skeleton, it returns the uppercase initial letter of
-    /// the input for both keys.
-    /// </summary>
-    public class DoubleMetaphone
+    public interface IPhoneticEncoder
     {
-        /// <summary>
-        /// Computes the primary and alternate phonetic codes for the specified word.
-        /// </summary>
-        /// <param name="word">The word to compute codes for.</param>
-        /// <returns>A tuple containing the primary and alternate codes.</returns>
-        public (string Primary, string Alternate) Compute(string word)
+        (string? primary, string? alternate) Encode(string? term);
+    }
+
+    public class DoubleMetaphoneEncoder : IPhoneticEncoder
+    {
+        private readonly DoubleMetaphone _dm;
+
+        public DoubleMetaphoneEncoder(bool useAlternate = true, int maxCodeLen = 4)
         {
-            if (string.IsNullOrWhiteSpace(word))
-            {
-                return (string.Empty, string.Empty);
-            }
-            var letter = char.ToUpperInvariant(word[0]).ToString();
-            return (letter, letter);
+            _dm = new DoubleMetaphone { MaxCodeLen = maxCodeLen };
+            _useAlternate = useAlternate;
+        }
+
+        private readonly bool _useAlternate;
+
+        public (string? primary, string? alternate) Encode(string? term)
+        {
+            if (string.IsNullOrWhiteSpace(term)) return (null, null);
+            term = term.Trim();
+            var primary = _dm.GetDoubleMetaphone(term);
+            var alternate = _useAlternate ? _dm.Encode(term) : null;
+            return (string.IsNullOrWhiteSpace(primary) ? null : primary,
+                    string.IsNullOrWhiteSpace(alternate) ? null : alternate);
         }
     }
 }

@@ -1,80 +1,93 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Text.Json;
-using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
-using NameSearch.Domain.Entities;
+using System.Text.Json.Serialization;
 
 namespace NameSearch.Infrastructure.Services
 {
-    /// <summary>
-    /// Provides nickname expansions for given first names based on a JSON dictionary.
-    /// The dictionary should map a canonical name to an array of known nicknames.
-    /// </summary>
-    public class NicknameProvider
+    public interface INicknameProvider
     {
-        private readonly Dictionary<string, List<string>> _nicknameMap;
+        IReadOnlyCollection<string> Expand(string name);
+    }
 
-        public NicknameProvider(IConfiguration configuration)
-        {
-            var filePath = configuration["NICKNAMES_PATH"];
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                // Fall back to a relative path within the app folder. This allows the
-                // dictionary to be resolved when running inside Docker.
-                filePath = Path.Combine(AppContext.BaseDirectory, "tools", "dictionaries", "nicknames.json");
-            }
-            _nicknameMap = LoadNicknameDictionary(filePath);
-        }
+    public sealed class NicknameProvider : INicknameProvider
+    {
+        private readonly Dictionary<string, HashSet<string>> _graph;
 
-        /// <summary>
-        /// Returns a list of nicknames associated with the given first name. Includes
-        /// the original name in the returned list for convenience.
-        /// </summary>
-        /// <param name="firstName">The canonical first name.</param>
-        public IReadOnlyList<string> GetNicknames(string firstName)
+        public NicknameProvider(string? jsonPath = null)
         {
-            if (string.IsNullOrWhiteSpace(firstName)) return Array.Empty<string>();
-            var key = firstName.ToLowerInvariant();
-            if (_nicknameMap.TryGetValue(key, out var list))
+            // Load JSON either from path or embedded defaults
+            string json;
+            if (!string.IsNullOrWhiteSpace(jsonPath) && File.Exists(jsonPath))
+                json = File.ReadAllText(jsonPath);
+            else
+                json = DefaultJson;
+
+            var opts = new JsonSerializerOptions
             {
-                // Prepend the canonical name if not already present.
-                var result = new List<string>(list.Count + 1);
-                if (!list.Contains(firstName, StringComparer.OrdinalIgnoreCase))
+                PropertyNameCaseInsensitive = true,
+                ReadCommentHandling = JsonCommentHandling.Skip,
+                AllowTrailingCommas = true
+            };
+
+            var seed = JsonSerializer.Deserialize<Dictionary<string, string[]>>(json, opts)
+                       ?? new Dictionary<string, string[]>();
+
+            // Build undirected graph (bidirectional)
+            _graph = new(StringComparer.OrdinalIgnoreCase);
+            foreach (var (canon, nicks) in seed)
+            {
+                AddNode(canon);
+                foreach (var n in nicks)
                 {
-                    result.Add(firstName);
-                }
-                result.AddRange(list);
-                return result;
-            }
-            return new List<string> { firstName };
-        }
-
-        private static Dictionary<string, List<string>> LoadNicknameDictionary(string path)
-        {
-            try
-            {
-                if (File.Exists(path))
-                {
-                    var json = File.ReadAllText(path);
-                    // Deserialize into Dictionary<string, string[]>
-                    var raw = JsonSerializer.Deserialize<Dictionary<string, string[]>>(json) ?? new();
-                    // Normalize keys and values to lower-case for case-insensitive lookups.
-                    return raw.ToDictionary(
-                        pair => pair.Key.ToLowerInvariant(),
-                        pair => pair.Value
-                                   .Where(v => !string.IsNullOrWhiteSpace(v))
-                                   .Select(v => v.Trim())
-                                   .ToList(),
-                        StringComparer.OrdinalIgnoreCase);
+                    AddNode(n);
+                    Link(canon, n);
                 }
             }
-            catch (Exception)
-            {
-                // Ignore parsing errors and fall back to empty dictionary.
-            }
-            return new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
         }
+
+        public IReadOnlyCollection<string> Expand(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return Array.Empty<string>();
+            var start = name.Trim();
+
+            // BFS over the nickname graph for transitive closure
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { start };
+            var q = new Queue<string>();
+            q.Enqueue(start);
+
+            while (q.Count > 0)
+            {
+                var cur = q.Dequeue();
+                if (!_graph.TryGetValue(cur, out var neighbors)) continue;
+                foreach (var n in neighbors)
+                {
+                    if (seen.Add(n))
+                        q.Enqueue(n);
+                }
+            }
+
+            return seen;
+        }
+
+        private void AddNode(string s)
+        {
+            if (!_graph.ContainsKey(s)) _graph[s] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        private void Link(string a, string b)
+        {
+            _graph[a].Add(b);
+            _graph[b].Add(a);
+        }
+
+        // Minimal defaults — replace with your full dictionary file
+        private const string DefaultJson = /*lang=json*/ @"{
+          ""elizabeth"": [""liz"",""beth"",""lizzy"",""eliza""],
+          ""william"": [""bill"",""will"",""billy""],
+          ""robert"": [""rob"",""bob"",""bobby""],
+          ""margaret"": [""maggie"",""meg"",""peggy""],
+          ""katherine"": [""kat"",""kate"",""kathy"",""cathy""],
+          ""john"": [""jack""],
+          ""henry"": [""harry""]
+        }";
     }
 }
