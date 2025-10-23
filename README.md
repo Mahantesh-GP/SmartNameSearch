@@ -29,7 +29,7 @@ The solution is organized into the following projects:
 1. **Clone this repository** and navigate into it:
 
    ```bash
-   git clone <your fork>
+   git clone https://github.com/Mahantesh-GP/SmartNameSearch.git
    cd MeiliNameSearch
    ```
 
