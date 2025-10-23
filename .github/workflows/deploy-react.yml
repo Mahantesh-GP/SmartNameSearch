@@ -1,0 +1,33 @@
+name: Deploy React app to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: MeiliNameSearch/MeiliNameSearchReact
+        run: npm ci
+
+      - name: Build
+        working-directory: MeiliNameSearch/MeiliNameSearchReact
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.4.0
+        with:
+          branch: gh-pages
+          folder: MeiliNameSearch/MeiliNameSearchReact/dist
+          clean: true
