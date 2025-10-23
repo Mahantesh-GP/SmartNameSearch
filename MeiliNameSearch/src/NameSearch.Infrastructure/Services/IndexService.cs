@@ -14,9 +14,9 @@ namespace NameSearch.Infrastructure.Services
         private const string IndexName = "persons";
         private readonly MeiliSearchClient _client;
         private readonly NicknameProvider _nicknameProvider;
-        private readonly DoubleMetaphone _doubleMetaphone;
+        private readonly DoubleMetaphoneEncoder _doubleMetaphone;
 
-        public IndexService(MeiliSearchClient client, NicknameProvider nicknameProvider, DoubleMetaphone doubleMetaphone)
+        public IndexService(MeiliSearchClient client, NicknameProvider nicknameProvider, DoubleMetaphoneEncoder doubleMetaphone)
         {
             _client = client;
             _nicknameProvider = nicknameProvider;
@@ -34,9 +34,26 @@ namespace NameSearch.Infrastructure.Services
             var docs = new List<Dictionary<string, object?>>();
             foreach (var record in records)
             {
-                var nicknames = _nicknameProvider.GetNicknames(record.FirstName);
-                var (firstPh, firstAlt) = _doubleMetaphone.Compute(record.FirstName);
-                var (lastPh, lastAlt) = _doubleMetaphone.Compute(record.LastName);
+               // for each record
+var firsts = _nicknameProvider.Expand(record.FirstName);   // e.g., ["Liz","Elizabeth","Beth",...]
+var lasts  = _nicknameProvider.Expand(record.LastName);    // often just the same last name list
+
+// phonetic encodes for all variants (first & last)
+var firstPhon = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+var lastPhon  = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+foreach (var f in firsts)
+{
+    var (p, a) = _doubleMetaphone.Encode(f);
+    if (!string.IsNullOrEmpty(p)) firstPhon.Add(p);
+    if (!string.IsNullOrEmpty(a)) firstPhon.Add(a!);
+}
+foreach (var l in lasts)
+{
+    var (p, a) = _doubleMetaphone.Encode(l);
+    if (!string.IsNullOrEmpty(p)) lastPhon.Add(p);
+    if (!string.IsNullOrEmpty(a)) lastPhon.Add(a!);
+}
                 // Build a document for Meilisearch. Additional properties like nicknames and
                 // phonetic keys are stored separately to enable filtering and scoring at search time.
                 var doc = new Dictionary<string, object?>
@@ -48,10 +65,15 @@ namespace NameSearch.Infrastructure.Services
                     ["city"] = record.City,
                     ["state"] = record.State,
                     ["dob"] = record.Dob?.ToString("yyyy-MM-dd"),
-                    ["nicknames"] = nicknames,
-                    ["phoneticFirst"] = new[] { firstPh, firstAlt },
-                    ["phoneticLast"] = new[] { lastPh, lastAlt },
-                    ["tokens"] = BuildTokens(record, nicknames)
+                    ["first_variants"] = firsts.ToArray(),  
+                    ["last_variants"] = lasts.ToArray(),
+                    ["phoneticFirst"] = firstPhon.ToArray(),
+                    ["phoneticLast"] = lastPhon.ToArray(),
+                    ["tokens"] =firsts.Concat(lasts)
+                   .Concat(firstPhon)
+                   .Concat(lastPhon)
+                   .Distinct(StringComparer.OrdinalIgnoreCase)
+                   .ToArray()
                 };
                 docs.Add(doc);
             }

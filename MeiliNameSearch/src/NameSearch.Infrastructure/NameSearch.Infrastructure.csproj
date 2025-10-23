@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Lucene.Net" Version="4.8.0-beta00016" />
+    <PackageReference Include="Lucene.Net.Analysis.Phonetic" Version="4.8.0-beta00016" />
     <ProjectReference Include="..\NameSearch.Domain\NameSearch.Domain.csproj" />
   <!-- System.Text.Json for serialization/deserialization of Meilisearch requests -->
   <PackageReference Include="System.Text.Json" Version="9.0.0" />
