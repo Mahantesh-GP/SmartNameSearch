@@ -17,4 +17,8 @@
     <!-- Swashbuckle provides AddSwaggerGen, UseSwagger and UseSwaggerUI -->
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
 </Project>
