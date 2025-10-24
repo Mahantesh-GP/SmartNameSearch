@@ -22,7 +22,8 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- Only copy nicknames.json when not building in Docker (local development) -->
+  <ItemGroup Condition="'$(DOTNET_RUNNING_IN_CONTAINER)' != 'true'">
     <Content Include="..\..\tools\dictionaries\nicknames.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>tools\dictionaries\nicknames.json</Link>
