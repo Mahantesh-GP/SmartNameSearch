@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NameSearch.Infrastructure.Services;
 using NameSearch.Infrastructure.Models;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,10 @@ builder.Services.AddHttpClient<SearchService>((serviceProvider, client) =>
 builder.Services.AddHttpClient("randomuser", client =>
 {
     client.Timeout = TimeSpan.FromSeconds(30);
+    // Some public APIs reject requests without a User-Agent. Ensure we send a friendly UA and JSON accept header.
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("SmartNameSearch/1.0 (+https://smartnamesearch.onrender.com)");
+    client.DefaultRequestHeaders.Accept.Clear();
+    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 });
 
 // Background task queue and hosted service for long-running indexing jobs
