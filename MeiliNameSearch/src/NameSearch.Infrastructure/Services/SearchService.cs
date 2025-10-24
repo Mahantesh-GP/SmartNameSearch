@@ -65,9 +65,7 @@ namespace NameSearch.Infrastructure.Services
             var requestBody = new
             {
                 q,
-                limit = clampedLimit,
-                // optional: ask Meili to return ranking score (some versions already include it)
-                showRankingScore = true
+                limit = clampedLimit
             };
 
             using var resp = await _client.PostAsJsonAsync($"indexes/{IndexName}/search", requestBody);
