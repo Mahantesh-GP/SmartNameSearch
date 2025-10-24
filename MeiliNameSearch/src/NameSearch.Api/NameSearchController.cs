@@ -7,6 +7,9 @@ using System.Text.Json;
 
 namespace NameSearch.Api
 {
+    /// <summary>
+    /// API controller for intelligent name search operations with phonetic matching and nickname expansion.
+    /// </summary>
     [ApiController]
     [Route("[controller]")]
     public class NameSearchController : ControllerBase
@@ -16,6 +19,13 @@ namespace NameSearch.Api
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<NameSearchController> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NameSearchController"/> class.
+        /// </summary>
+        /// <param name="indexService">Service for indexing person records.</param>
+        /// <param name="searchService">Service for searching indexed records.</param>
+        /// <param name="httpClientFactory">Factory for creating HTTP clients.</param>
+        /// <param name="logger">Logger for diagnostic messages.</param>
         public NameSearchController(IndexService indexService, SearchService searchService, IHttpClientFactory httpClientFactory, ILogger<NameSearchController> logger)
         {
             _indexService = indexService;
@@ -232,6 +242,11 @@ namespace NameSearch.Api
                 return Accepted(new { JobId = jobId });
             }
 
+            /// <summary>
+            /// Gets the current status of a background job.
+            /// </summary>
+            /// <param name="id">The job identifier returned from the enqueue endpoint.</param>
+            /// <returns>Job status information including ID and current state.</returns>
             [HttpGet("job-status/{id}")]
             public IActionResult JobStatus(string id)
             {
