@@ -22,6 +22,19 @@ builder.Services.AddHttpClient<MeiliSearchClient>((serviceProvider, client) =>
     }
 });
 
+// Register HttpClient for SearchService (same configuration as MeiliSearchClient)
+builder.Services.AddHttpClient<SearchService>((serviceProvider, client) =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var host = configuration["MEILI_HOST"] ?? "https://meilisearch-latest-mhph.onrender.com/";
+    client.BaseAddress = new Uri(host);
+    var apiKey = configuration["MEILI_API_KEY"] ?? "f366fe5896d3f3ef6713d68ed59ef829";
+    if (!string.IsNullOrWhiteSpace(apiKey))
+    {
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+    }
+});
+
 // Named HttpClient for external sample data fetches (randomuser.me)
 builder.Services.AddHttpClient("randomuser", client =>
 {
@@ -44,7 +57,9 @@ builder.Services.AddSingleton<INicknameProvider>(_ =>
     return new NicknameProvider(path);
 });
 builder.Services.AddScoped<IndexService>();
-builder.Services.AddScoped<SearchService>();
+
+// Note: SearchService HttpClient is already registered via AddHttpClient<SearchService> above
+// So we don't need AddScoped here - it's automatically registered by the HttpClient factory
 
 // Configure CORS using ALLOWED_ORIGINS env var (semicolon-separated). Provide sensible defaults
 // so the frontend (GitHub Pages, Render static site, or local Vite) can reach the API.
