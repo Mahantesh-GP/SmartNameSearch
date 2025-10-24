@@ -104,7 +104,8 @@ function App() {
     setError('');
     try {
       const base = apiBasePath.endsWith('/') ? apiBasePath.slice(0, -1) : apiBasePath;
-      const url = `${base}/NameSearch/enqueue-bulk-index?count=100`;
+      // Use synthetic data endpoint for reliable indexing without external API dependencies
+      const url = `${base}/NameSearch/enqueue-bulk-index-sample?count=100`;
       const resp = await fetch(url, { 
         method: 'POST',
         credentials: 'same-origin' 
