@@ -491,7 +491,7 @@ function App() {
                     </div>
                     <div className="flex flex-col items-end gap-2">
                       <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold py-2 px-4 rounded-full text-sm shadow-lg">
-                        Score: {result.score.toFixed(2)}
+                        {Math.round(result.score * 100)}%
                       </div>
                     </div>
                   </div>
