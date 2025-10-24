@@ -1,0 +1,19 @@
+{
+  "name": "meilinamesearch",
+  "version": "1.0.0",
+  "description": "This repository contains a sample implementation of a **phonetic name search** service built with **.NET 9** and backed by **Meilisearch**.  The goal of the project is to demonstrate how to index and query person/business records using phonetic matching, nickname expansion and fuzzy search.  The solution is structured as a small microservice that can be run locally using Docker or deployed to any cloud environment.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parse": "^5.6.0",
+    "node-fetch": "^3.3.2"
+  }
+}

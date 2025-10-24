@@ -39,7 +39,7 @@ builder.Services.AddSingleton<NameSearch.Api.Background.JobTracker>();
 builder.Services.AddSingleton<IPhoneticEncoder>(_ => new DoubleMetaphoneEncoder(useAlternate: true, maxCodeLen: 4));
 builder.Services.AddSingleton<INicknameProvider>(_ =>
 {
-    var path = builder.Configuration["NICKNAMES_PATH"];
+    var path = builder.Configuration["NICKNAMES_PATH"] ?? Path.Combine(AppContext.BaseDirectory, "tools", "dictionaries", "nicknames.json");
     return new NicknameProvider(path);
 });
 builder.Services.AddScoped<IndexService>();
