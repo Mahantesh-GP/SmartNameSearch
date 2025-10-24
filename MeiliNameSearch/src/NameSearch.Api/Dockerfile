@@ -6,21 +6,21 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# Copy all project files (build context should be MeiliNameSearch/src)
-COPY ["NameSearch.Api/NameSearch.Api.csproj", "NameSearch.Api/"]
-COPY ["NameSearch.Domain/NameSearch.Domain.csproj", "NameSearch.Domain/"]
-COPY ["NameSearch.Infrastructure/NameSearch.Infrastructure.csproj", "NameSearch.Infrastructure/"]
+# Copy all project files (build context should be MeiliNameSearch)
+COPY ["src/NameSearch.Api/NameSearch.Api.csproj", "NameSearch.Api/"]
+COPY ["src/NameSearch.Domain/NameSearch.Domain.csproj", "NameSearch.Domain/"]
+COPY ["src/NameSearch.Infrastructure/NameSearch.Infrastructure.csproj", "NameSearch.Infrastructure/"]
 
 # Restore dependencies
 RUN dotnet restore "NameSearch.Api/NameSearch.Api.csproj"
 
 # Copy all source files
-COPY NameSearch.Api/ NameSearch.Api/
-COPY NameSearch.Domain/ NameSearch.Domain/
-COPY NameSearch.Infrastructure/ NameSearch.Infrastructure/
+COPY src/NameSearch.Api/ NameSearch.Api/
+COPY src/NameSearch.Domain/ NameSearch.Domain/
+COPY src/NameSearch.Infrastructure/ NameSearch.Infrastructure/
 
-# Copy nickname dictionary from tools directory (one level up from src)
-COPY ../tools/dictionaries/nicknames.json NameSearch.Api/tools/dictionaries/nicknames.json
+# Copy nickname dictionary from tools directory
+COPY tools/dictionaries/nicknames.json NameSearch.Api/tools/dictionaries/nicknames.json
 
 # Build and publish
 WORKDIR /src/NameSearch.Api
