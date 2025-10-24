@@ -63,8 +63,21 @@ namespace NameSearch.Api
             {
                 return BadRequest("Query parameter is required.");
             }
-            var results = await _searchService.SearchAsync(query, limit);
-            return Ok(results);
+            try
+            {
+                var results = await _searchService.SearchAsync(query, limit);
+                return Ok(results);
+            }
+            catch (HttpRequestException httpEx)
+            {
+                _logger.LogError(httpEx, "Search failed when calling Meilisearch: {Message}", httpEx.Message);
+                return StatusCode(502, "Upstream search engine error (Meilisearch). Please try again.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error in SearchAsync");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         /// <summary>
