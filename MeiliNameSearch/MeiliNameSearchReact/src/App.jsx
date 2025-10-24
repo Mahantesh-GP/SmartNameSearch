@@ -26,6 +26,8 @@ function App() {
     return !localStorage.getItem('welcomeBannerDismissed');
   });
   const [indexEmpty, setIndexEmpty] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   // Apply or remove the dark class on the root element when darkMode changes
   useEffect(() => {
@@ -48,16 +50,19 @@ function App() {
       setResults([]);
       setHasSearched(false);
       setIndexEmpty(false);
+      setCurrentPage(1);
       return;
     }
     setLoading(true);
     setError('');
     setHasSearched(true);
     setIndexEmpty(false);
+    setCurrentPage(1);
     try {
       // Build the proxied path. Ensure apiBasePath doesn't end with a slash.
       const base = apiBasePath.endsWith('/') ? apiBasePath.slice(0, -1) : apiBasePath;
-      const url = `${base}/NameSearch/search?query=${encodeURIComponent(trimmed)}&limit=10`;
+      // Fetch more results for pagination (up to 100)
+      const url = `${base}/NameSearch/search?query=${encodeURIComponent(trimmed)}&limit=100`;
       const resp = await fetch(url, { credentials: 'same-origin' });
       if (!resp.ok) {
         throw new Error('Network response was not ok');
@@ -207,6 +212,17 @@ function App() {
     }
     return arr;
   }, [results, filterState, sortOption]);
+
+  // Reset to page 1 when filters or sort change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterState, sortOption]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredAndSorted.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedResults = filteredAndSorted.slice(startIndex, endIndex);
 
   // Maximum score for the progress bar normalization
   const maxScore = useMemo(() => {
@@ -458,7 +474,7 @@ function App() {
 
         {/* Results */}
         <div className="mt-12 w-full max-w-4xl space-y-4">
-          {filteredAndSorted.map((result, index) => (
+          {paginatedResults.map((result, index) => (
             <div 
               key={result.id}
               className="group animate-fadeIn"
@@ -517,6 +533,41 @@ function App() {
             </div>
           ))}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-2">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                currentPage === 1
+                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-lg hover:shadow-xl'
+              }`}
+            >
+              Previous
+            </button>
+
+            <div className="flex items-center gap-2">
+              <span className="px-4 py-2 bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 text-white font-medium">
+                Page {currentPage} of {totalPages}
+              </span>
+            </div>
+
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                currentPage === totalPages
+                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-lg hover:shadow-xl'
+              }`}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
