@@ -13,12 +13,15 @@ builder.Services.AddHttpClient<MeiliSearchClient>((serviceProvider, client) =>
 {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
     var host = configuration["MEILI_HOST"] ?? "https://meilisearch-latest-mhph.onrender.com/";
+    if (!host.EndsWith("/", StringComparison.Ordinal)) host += "/";
     client.BaseAddress = new Uri(host);
-    var apiKey = "f366fe5896d3f3ef6713d68ed59ef829";
+    var apiKey = configuration["MEILI_API_KEY"] ?? "f366fe5896d3f3ef6713d68ed59ef829";
     if (!string.IsNullOrWhiteSpace(apiKey))
     {
-        // Meilisearch expects the API key in the X-Meili-API-Key header by default.
+        // Send both headers to be compatible across Meilisearch versions
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+        client.DefaultRequestHeaders.Remove("X-Meili-API-Key");
+        client.DefaultRequestHeaders.Add("X-Meili-API-Key", apiKey);
     }
 });
 
@@ -27,11 +30,14 @@ builder.Services.AddHttpClient<SearchService>((serviceProvider, client) =>
 {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
     var host = configuration["MEILI_HOST"] ?? "https://meilisearch-latest-mhph.onrender.com/";
+    if (!host.EndsWith("/", StringComparison.Ordinal)) host += "/";
     client.BaseAddress = new Uri(host);
     var apiKey = configuration["MEILI_API_KEY"] ?? "f366fe5896d3f3ef6713d68ed59ef829";
     if (!string.IsNullOrWhiteSpace(apiKey))
     {
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+        client.DefaultRequestHeaders.Remove("X-Meili-API-Key");
+        client.DefaultRequestHeaders.Add("X-Meili-API-Key", apiKey);
     }
 });
 
@@ -96,5 +102,8 @@ if (enableSwagger)
 
 // Map controllers.
 app.MapControllers();
+
+// Lightweight health endpoint
+app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }));
 
 app.Run();
