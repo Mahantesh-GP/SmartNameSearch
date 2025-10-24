@@ -18,6 +18,9 @@ function App() {
       window.matchMedia('(prefers-color-scheme: dark)').matches
     );
   });
+  const [indexing, setIndexing] = useState(false);
+  const [jobStatus, setJobStatus] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
 
   // Apply or remove the dark class on the root element when darkMode changes
   useEffect(() => {
@@ -33,10 +36,12 @@ function App() {
     const trimmed = query.trim();
     if (!trimmed) {
       setResults([]);
+      setHasSearched(false);
       return;
     }
     setLoading(true);
     setError('');
+    setHasSearched(true);
     try {
       // Build the proxied path. Ensure apiBasePath doesn't end with a slash.
       const base = apiBasePath.endsWith('/') ? apiBasePath.slice(0, -1) : apiBasePath;
@@ -53,6 +58,72 @@ function App() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Trigger bulk indexing
+  const startBulkIndex = async () => {
+    setIndexing(true);
+    setJobStatus('Initiating bulk upload...');
+    setError('');
+    try {
+      const base = apiBasePath.endsWith('/') ? apiBasePath.slice(0, -1) : apiBasePath;
+      const url = `${base}/NameSearch/enqueue-bulk-index?count=100`;
+      const resp = await fetch(url, { 
+        method: 'POST',
+        credentials: 'same-origin' 
+      });
+      if (!resp.ok) {
+        throw new Error('Failed to start bulk indexing');
+      }
+      const data = await resp.json();
+      if (data.jobId) {
+        setJobStatus('Bulk upload started. Checking status...');
+        pollJobStatus(data.jobId);
+      } else {
+        setJobStatus('Bulk upload initiated successfully!');
+        setIndexing(false);
+      }
+    } catch (e) {
+      console.error(e);
+      setError('Failed to start bulk indexing. Check the API server.');
+      setIndexing(false);
+    }
+  };
+
+  // Poll job status
+  const pollJobStatus = async (jobId) => {
+    const base = apiBasePath.endsWith('/') ? apiBasePath.slice(0, -1) : apiBasePath;
+    const url = `${base}/NameSearch/job-status/${jobId}`;
+    
+    const checkStatus = async () => {
+      try {
+        const resp = await fetch(url, { credentials: 'same-origin' });
+        if (!resp.ok) {
+          throw new Error('Failed to check job status');
+        }
+        const data = await resp.json();
+        
+        if (data.Status === 'Completed') {
+          setJobStatus('✓ Bulk upload completed successfully!');
+          setIndexing(false);
+        } else if (data.Status === 'Failed') {
+          setJobStatus('✗ Bulk upload failed.');
+          setIndexing(false);
+        } else if (data.Status === 'Running') {
+          setJobStatus('⏳ Bulk upload in progress...');
+          setTimeout(checkStatus, 2000); // Check again in 2 seconds
+        } else {
+          setJobStatus(`Status: ${data.Status}`);
+          setTimeout(checkStatus, 2000);
+        }
+      } catch (e) {
+        console.error(e);
+        setJobStatus('Failed to check job status.');
+        setIndexing(false);
+      }
+    };
+    
+    checkStatus();
   };
 
   const handleKeyDown = (e) => {
@@ -106,14 +177,36 @@ function App() {
         <h1 className="text-4xl font-extrabold tracking-tight text-gray-800 dark:text-gray-100">
           Smart Name Search
         </h1>
-        <button
-          onClick={toggleDarkMode}
-          className="ml-4 bg-transparent border border-gray-300 dark:border-gray-600 rounded-full p-2 text-xl focus:outline-none hover:bg-gray-200 dark:hover:bg-gray-700"
-          title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-        >
-          {darkMode ? '☀️' : '🌙'}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={startBulkIndex}
+            disabled={indexing}
+            className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+            title="Upload 100 sample records to the search index"
+          >
+            {indexing ? '⏳ Uploading...' : '📤 Bulk Upload'}
+          </button>
+          <button
+            onClick={toggleDarkMode}
+            className="ml-2 bg-transparent border border-gray-300 dark:border-gray-600 rounded-full p-2 text-xl focus:outline-none hover:bg-gray-200 dark:hover:bg-gray-700"
+            title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {darkMode ? '☀️' : '🌙'}
+          </button>
+        </div>
       </div>
+
+      {jobStatus && (
+        <div className="mt-4 w-full max-w-2xl">
+          <div className={`p-3 rounded-lg text-sm ${
+            jobStatus.includes('✓') ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
+            jobStatus.includes('✗') ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
+            'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
+          }`}>
+            {jobStatus}
+          </div>
+        </div>
+      )}
 
       <div className="relative mt-8 w-full max-w-2xl">
         <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
@@ -191,6 +284,17 @@ function App() {
       )}
       {error && (
         <div className="mt-6 text-red-500 dark:text-red-400">{error}</div>
+      )}
+
+      {hasSearched && !loading && filteredAndSorted.length === 0 && !error && (
+        <div className="mt-8 w-full max-w-3xl p-6 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-center">
+          <div className="text-gray-500 dark:text-gray-400 text-lg mb-2">
+            🔍 No results found for "{query}"
+          </div>
+          <div className="text-sm text-gray-400 dark:text-gray-500">
+            Try a different search term or upload sample data using the Bulk Upload button.
+          </div>
+        </div>
       )}
 
       <ul className="mt-8 w-full max-w-3xl space-y-4">
