@@ -141,17 +141,23 @@ function App() {
         }
         const data = await resp.json();
         
-        if (data.Status === 'Completed') {
+        // API returns lowercase 'status', not 'Status'
+        const status = data.status || data.Status;
+        
+        if (status === 'Completed' || status?.startsWith('Completed:')) {
           setJobStatus('✓ Bulk upload completed successfully!');
           setIndexing(false);
-        } else if (data.Status === 'Failed') {
+        } else if (status === 'Failed') {
           setJobStatus('✗ Bulk upload failed.');
           setIndexing(false);
-        } else if (data.Status === 'Running') {
+        } else if (status === 'Running') {
           setJobStatus('⏳ Bulk upload in progress...');
           setTimeout(checkStatus, 2000); // Check again in 2 seconds
+        } else if (status === 'Queued') {
+          setJobStatus('⏳ Bulk upload queued...');
+          setTimeout(checkStatus, 2000);
         } else {
-          setJobStatus(`Status: ${data.Status}`);
+          setJobStatus(`Status: ${status || 'Unknown'}`);
           setTimeout(checkStatus, 2000);
         }
       } catch (e) {
