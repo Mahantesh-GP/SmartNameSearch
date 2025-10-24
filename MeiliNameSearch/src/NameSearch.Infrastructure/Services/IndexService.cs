@@ -13,10 +13,10 @@ namespace NameSearch.Infrastructure.Services
     {
         private const string IndexName = "persons";
         private readonly MeiliSearchClient _client;
-        private readonly NicknameProvider _nicknameProvider;
+        private readonly INicknameProvider _nicknameProvider;
         private readonly DoubleMetaphoneEncoder _doubleMetaphone;
 
-        public IndexService(MeiliSearchClient client, NicknameProvider nicknameProvider, DoubleMetaphoneEncoder doubleMetaphone)
+        public IndexService(MeiliSearchClient client, INicknameProvider nicknameProvider, DoubleMetaphoneEncoder doubleMetaphone)
         {
             _client = client;
             _nicknameProvider = nicknameProvider;
