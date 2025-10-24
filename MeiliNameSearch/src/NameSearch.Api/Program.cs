@@ -36,7 +36,8 @@ builder.Services.AddHostedService<NameSearch.Api.Background.QueuedHostedService>
 builder.Services.AddSingleton<NameSearch.Api.Background.JobTracker>();
 
 // Register custom services.
-builder.Services.AddSingleton<IPhoneticEncoder>(_ => new DoubleMetaphoneEncoder(useAlternate: true, maxCodeLen: 4));
+builder.Services.AddSingleton<DoubleMetaphoneEncoder>(_ => new DoubleMetaphoneEncoder(true, 4));
+builder.Services.AddSingleton<IPhoneticEncoder>(sp => sp.GetRequiredService<DoubleMetaphoneEncoder>());
 builder.Services.AddSingleton<INicknameProvider>(_ =>
 {
     var path = builder.Configuration["NICKNAMES_PATH"] ?? Path.Combine(AppContext.BaseDirectory, "tools", "dictionaries", "nicknames.json");
