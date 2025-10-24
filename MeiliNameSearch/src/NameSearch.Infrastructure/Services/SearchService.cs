@@ -71,6 +71,11 @@ namespace NameSearch.Infrastructure.Services
             };
 
             using var resp = await _client.PostAsJsonAsync($"indexes/{IndexName}/search", requestBody);
+            // If index is missing, treat as empty results rather than surfacing an error
+            if (resp.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return Array.Empty<SearchResult>();
+            }
             resp.EnsureSuccessStatusCode();
 
             var json = await resp.Content.ReadAsStringAsync();
