@@ -3,29 +3,32 @@ WORKDIR /app
 EXPOSE 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# Copy csproj files from the build context (src/) so restore can be cached
-COPY NameSearch.Domain/NameSearch.Domain.csproj NameSearch.Domain/
-COPY NameSearch.Infrastructure/NameSearch.Infrastructure.csproj NameSearch.Infrastructure/
-COPY NameSearch.Api/NameSearch.Api.csproj NameSearch.Api/
+# Copy all project files (build context should be MeiliNameSearch/src)
+COPY ["NameSearch.Api/NameSearch.Api.csproj", "NameSearch.Api/"]
+COPY ["NameSearch.Domain/NameSearch.Domain.csproj", "NameSearch.Domain/"]
+COPY ["NameSearch.Infrastructure/NameSearch.Infrastructure.csproj", "NameSearch.Infrastructure/"]
 
-# Restore as distinct layers to improve build performance.
-RUN dotnet restore NameSearch.Api/NameSearch.Api.csproj
+# Restore dependencies
+RUN dotnet restore "NameSearch.Api/NameSearch.Api.csproj"
 
-# Copy the rest of the source code
-COPY . .
+# Copy all source files
+COPY NameSearch.Api/ NameSearch.Api/
+COPY NameSearch.Domain/ NameSearch.Domain/
+COPY NameSearch.Infrastructure/ NameSearch.Infrastructure/
 
-# Copy nickname dictionary from tools directory
-COPY ../../tools/dictionaries/nicknames.json /src/tools/dictionaries/
+# Copy nickname dictionary from tools directory (one level up from src)
+COPY ../tools/dictionaries/nicknames.json NameSearch.Api/tools/dictionaries/nicknames.json
 
-# Build and publish the application
+# Build and publish
 WORKDIR /src/NameSearch.Api
-RUN dotnet publish NameSearch.Api.csproj -c Release -o /app/publish
+RUN dotnet publish "NameSearch.Api.csproj" -c ${BUILD_CONFIGURATION} -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
-ENV ASPNETCORE_URLS="http://0.0.0.0:8080"
+ENV ASPNETCORE_URLS=http://0.0.0.0:8080
 ENTRYPOINT ["sh", "-c", "dotnet NameSearch.Api.dll --urls http://0.0.0.0:$PORT"]
