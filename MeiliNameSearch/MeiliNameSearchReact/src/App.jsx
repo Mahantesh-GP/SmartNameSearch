@@ -241,35 +241,35 @@ function App() {
         <div className="absolute top-40 left-40 w-80 h-80 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
       </div>
 
-      <div className="relative flex flex-col items-center w-full p-4 pb-16">
+      <div className="relative flex flex-col items-center w-full p-2 sm:p-4 pb-16">
         {/* Header */}
-        <div className="flex w-full max-w-4xl justify-between items-center mt-8 mb-4">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
-              <span className="text-3xl">🔍</span>
+        <div className="flex flex-col sm:flex-row w-full max-w-4xl justify-between items-center mt-4 sm:mt-8 mb-4 gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+              <span className="text-2xl sm:text-3xl">🔍</span>
             </div>
             <div>
-              <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                 Smart Name Search
               </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">AI-Powered Name Matching Engine</p>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">AI-Powered Name Matching Engine</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={startBulkIndex}
               disabled={indexing}
-              className="group relative bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800 transition-all shadow-lg hover:shadow-xl hover:scale-105 disabled:scale-100"
+              className="group relative bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-2 px-4 sm:py-3 sm:px-6 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800 transition-all shadow-lg hover:shadow-xl hover:scale-105 disabled:scale-100"
               title="Upload 100 sample records to the search index"
             >
               <span className="flex items-center gap-2">
-                <span className="text-xl">{indexing ? '⏳' : '📤'}</span>
-                <span>{indexing ? 'Uploading...' : 'Bulk Upload'}</span>
+                <span className="text-lg sm:text-xl">{indexing ? '⏳' : '📤'}</span>
+                <span className="text-sm sm:text-base">{indexing ? 'Uploading...' : 'Bulk Upload'}</span>
               </span>
             </button>
             <button
               onClick={toggleDarkMode}
-              className="w-12 h-12 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-gray-200 dark:border-gray-700 rounded-xl text-2xl focus:outline-none hover:scale-110 transition-all shadow-md hover:shadow-lg"
+              className="w-10 h-10 sm:w-12 sm:h-12 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-gray-200 dark:border-gray-700 rounded-xl text-xl sm:text-2xl focus:outline-none hover:scale-110 transition-all shadow-md hover:shadow-lg"
               title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {darkMode ? '☀️' : '🌙'}
@@ -335,15 +335,15 @@ function App() {
         )}
 
         {/* Search Box */}
-        <div className="relative mt-8 w-full max-w-4xl">
+        <div className="relative mt-4 sm:mt-8 w-full max-w-4xl px-2 sm:px-0">
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl blur-lg opacity-75 group-hover:opacity-100 transition duration-300"></div>
-            <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-2">
-              <div className="flex items-center gap-3">
-                <div className="flex-1 relative">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-6 pointer-events-none">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl sm:rounded-3xl blur-lg opacity-75 group-hover:opacity-100 transition duration-300"></div>
+            <div className="relative bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl shadow-2xl p-1.5 sm:p-2">
+              <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+                <div className="flex-1 w-full relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 sm:pl-6 pointer-events-none">
                     <svg
-                      className="h-6 w-6 text-gray-400 dark:text-gray-500"
+                      className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 dark:text-gray-500"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -354,7 +354,7 @@ function App() {
                     </svg>
                   </div>
                   <input
-                    className="block w-full pl-16 pr-6 py-4 text-lg rounded-2xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="block w-full pl-10 sm:pl-16 pr-3 sm:pr-6 py-3 sm:py-4 text-base sm:text-lg rounded-xl sm:rounded-2xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                     type="text"
                     placeholder="Search for a name..."
                     value={query}
@@ -365,7 +365,7 @@ function App() {
                 <button
                   type="button"
                   onClick={search}
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:focus:ring-indigo-800 transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+                  className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3 px-6 sm:py-4 sm:px-8 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:focus:ring-indigo-800 transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
                 >
                   Search
                 </button>
@@ -375,31 +375,31 @@ function App() {
         </div>
 
         {/* Filters and Sort */}
-        <div className="flex flex-wrap gap-4 w-full max-w-4xl mt-8 items-center">
-          <div className="flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 py-3 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-            <label htmlFor="sort" className="font-medium text-gray-700 dark:text-gray-300">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 w-full max-w-4xl mt-4 sm:mt-8 items-stretch sm:items-center px-2 sm:px-0">
+          <div className="flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-3 sm:px-4 py-2 sm:py-3 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 w-full sm:w-auto">
+            <label htmlFor="sort" className="font-medium text-gray-700 dark:text-gray-300 text-sm sm:text-base">
               Sort:
             </label>
             <select
               id="sort"
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value)}
-              className="border-0 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium cursor-pointer"
+              className="border-0 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-2 sm:px-3 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium cursor-pointer text-sm sm:text-base flex-1"
             >
               <option value="score-desc">Score ↓</option>
               <option value="score-asc">Score ↑</option>
               <option value="name-asc">Name A–Z</option>
             </select>
           </div>
-          <div className="flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 py-3 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-            <label htmlFor="stateFilter" className="font-medium text-gray-700 dark:text-gray-300">
+          <div className="flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-3 sm:px-4 py-2 sm:py-3 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 w-full sm:w-auto">
+            <label htmlFor="stateFilter" className="font-medium text-gray-700 dark:text-gray-300 text-sm sm:text-base">
               Filter:
             </label>
             <select
               id="stateFilter"
               value={filterState}
               onChange={(e) => setFilterState(e.target.value)}
-              className="border-0 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium cursor-pointer"
+              className="border-0 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-2 sm:px-3 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium cursor-pointer text-sm sm:text-base flex-1"
             >
               <option value="">All States</option>
               {availableStates.map((st) => (
@@ -480,26 +480,26 @@ function App() {
               className="group animate-fadeIn"
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-300 overflow-hidden">
+              <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-300 overflow-hidden">
                 {/* Gradient accent on hover */}
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-pink-500/5 transition-all duration-300"></div>
                 
-                <div className="relative p-6">
+                <div className="relative p-4 sm:p-6">
                   {/* Header with name and score */}
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                  <div className="flex justify-between items-start mb-3 sm:mb-4 gap-2">
+                    <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center text-white font-bold text-base sm:text-lg shadow-lg">
                         {result.person.firstName.charAt(0)}{result.person.lastName.charAt(0)}
                       </div>
-                      <div>
-                        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                      <div className="min-w-0 flex-1">
+                        <h2 className="text-lg sm:text-2xl font-bold text-gray-800 dark:text-gray-100 break-words">
                           {result.person.firstName}{' '}
                           {result.person.middleName ? `${result.person.middleName} ` : ''}
                           {result.person.lastName}
                         </h2>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
                           <span>📍</span>
-                          <span>
+                          <span className="truncate">
                             {(() => {
                               const city = result.person.city || '';
                               const state = result.person.state || '';
@@ -512,16 +512,16 @@ function App() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold py-2 px-4 rounded-full text-sm shadow-lg">
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold py-1.5 px-3 sm:py-2 sm:px-4 rounded-full text-xs sm:text-sm shadow-lg whitespace-nowrap">
                         {Math.round(result.score * 100)}%
                       </div>
                     </div>
                   </div>
 
                   {/* Score progress bar */}
-                  <div className="mt-4">
-                    <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden shadow-inner">
+                  <div className="mt-3 sm:mt-4">
+                    <div className="w-full h-2 sm:h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden shadow-inner">
                       <div
                         className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-500 shadow-lg"
                         style={{ width: maxScore > 0 ? `${(result.score / maxScore) * 100}%` : '0%' }}
@@ -536,35 +536,38 @@ function App() {
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="mt-8 flex items-center justify-center gap-2">
+          <div className="mt-8 flex items-center justify-center gap-2 px-2">
             <button
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+              className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-all duration-300 text-sm sm:text-base ${
                 currentPage === 1
                   ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                   : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-lg hover:shadow-xl'
               }`}
             >
-              Previous
+              <span className="hidden sm:inline">Previous</span>
+              <span className="sm:hidden">←</span>
             </button>
 
             <div className="flex items-center gap-2">
-              <span className="px-4 py-2 bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 text-white font-medium">
-                Page {currentPage} of {totalPages}
+              <span className="px-2 py-2 sm:px-4 sm:py-2 bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 text-white font-medium text-xs sm:text-base">
+                <span className="hidden sm:inline">Page {currentPage} of {totalPages}</span>
+                <span className="sm:hidden">{currentPage}/{totalPages}</span>
               </span>
             </div>
 
             <button
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+              className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-all duration-300 text-sm sm:text-base ${
                 currentPage === totalPages
                   ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                   : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-lg hover:shadow-xl'
               }`}
             >
-              Next
+              <span className="hidden sm:inline">Next</span>
+              <span className="sm:hidden">→</span>
             </button>
           </div>
         )}
