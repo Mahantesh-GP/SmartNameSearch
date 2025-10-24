@@ -70,11 +70,17 @@ namespace NameSearch.Infrastructure.Services
 
             using var resp = await _client.PostAsJsonAsync($"indexes/{IndexName}/search", requestBody);
             // If index is missing, treat as empty results rather than surfacing an error
-            if (resp.StatusCode == System.Net.HttpStatusCode.NotFound)
+            if (!resp.IsSuccessStatusCode)
             {
+                // Missing index or other non-auth error: treat as empty results to avoid surfacing 502
+                if (resp.StatusCode == System.Net.HttpStatusCode.Unauthorized ||
+                    resp.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    // Auth issues should bubble up to be fixed via configuration
+                    resp.EnsureSuccessStatusCode();
+                }
                 return Array.Empty<SearchResult>();
             }
-            resp.EnsureSuccessStatusCode();
 
             var json = await resp.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(json);
