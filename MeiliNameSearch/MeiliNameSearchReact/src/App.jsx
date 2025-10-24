@@ -210,226 +210,307 @@ function App() {
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
 
   return (
-    <div className="flex flex-col items-center w-full p-4">
-      <div className="flex w-full max-w-2xl justify-between items-center mt-6">
-        <h1 className="text-4xl font-extrabold tracking-tight text-gray-800 dark:text-gray-100">
-          Smart Name Search
-        </h1>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={startBulkIndex}
-            disabled={indexing}
-            className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
-            title="Upload 100 sample records to the search index"
-          >
-            {indexing ? '⏳ Uploading...' : '📤 Bulk Upload'}
-          </button>
-          <button
-            onClick={toggleDarkMode}
-            className="ml-2 bg-transparent border border-gray-300 dark:border-gray-600 rounded-full p-2 text-xl focus:outline-none hover:bg-gray-200 dark:hover:bg-gray-700"
-            title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {darkMode ? '☀️' : '🌙'}
-          </button>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950">
+      {/* Animated background decorations */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-70 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
       </div>
 
-      {showWelcomeBanner && (
-        <div className="mt-6 w-full max-w-3xl">
-          <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-200 dark:border-blue-700 rounded-xl p-5 shadow-md">
-            <button
-              onClick={dismissWelcomeBanner}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl leading-none"
-              title="Dismiss"
-            >
-              ×
-            </button>
-            <div className="pr-8">
-              <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-2 flex items-center gap-2">
-                👋 Welcome to Smart Name Search!
-              </h3>
-              <div className="text-sm text-blue-800 dark:text-blue-300 space-y-2">
-                <p className="flex items-start gap-2">
-                  <span className="text-base">⏳</span>
-                  <span><strong>First visit?</strong> The API is hosted on Render.com and may take 1-2 minutes to wake up from cold start on first request.</span>
-                </p>
-                <p className="flex items-start gap-2">
-                  <span className="text-base">📤</span>
-                  <span><strong>Get started:</strong> Click the <strong>"Bulk Upload"</strong> button above to index 100 sample records into the search database.</span>
-                </p>
-                <p className="flex items-start gap-2">
-                  <span className="text-base">🔍</span>
-                  <span><strong>Then search:</strong> Once indexing completes, try searching for names like "Bob", "Elizabeth", or "John" to see the smart matching in action!</span>
-                </p>
-              </div>
+      <div className="relative flex flex-col items-center w-full p-4 pb-16">
+        {/* Header */}
+        <div className="flex w-full max-w-4xl justify-between items-center mt-8 mb-4">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+              <span className="text-3xl">🔍</span>
+            </div>
+            <div>
+              <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+                Smart Name Search
+              </h1>
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">AI-Powered Name Matching Engine</p>
             </div>
           </div>
-        </div>
-      )}
-
-      {jobStatus && (
-        <div className="mt-4 w-full max-w-2xl">
-          <div className={`p-3 rounded-lg text-sm ${
-            jobStatus.includes('✓') ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
-            jobStatus.includes('✗') ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
-            'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
-          }`}>
-            {jobStatus}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={startBulkIndex}
+              disabled={indexing}
+              className="group relative bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800 transition-all shadow-lg hover:shadow-xl hover:scale-105 disabled:scale-100"
+              title="Upload 100 sample records to the search index"
+            >
+              <span className="flex items-center gap-2">
+                <span className="text-xl">{indexing ? '⏳' : '📤'}</span>
+                <span>{indexing ? 'Uploading...' : 'Bulk Upload'}</span>
+              </span>
+            </button>
+            <button
+              onClick={toggleDarkMode}
+              className="w-12 h-12 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-gray-200 dark:border-gray-700 rounded-xl text-2xl focus:outline-none hover:scale-110 transition-all shadow-md hover:shadow-lg"
+              title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {darkMode ? '☀️' : '🌙'}
+            </button>
           </div>
         </div>
-      )}
 
-      <div className="relative mt-8 w-full max-w-2xl">
-        <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-          <svg
-            className="h-5 w-5 text-gray-400 dark:text-gray-500"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.5 3a7.5 7.5 0 010 15z" />
-          </svg>
-        </div>
-        <input
-          className="block w-full pl-12 pr-4 py-3 rounded-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          type="text"
-          placeholder="Search for a name…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-        <button
-          type="button"
-          onClick={search}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          Search
-        </button>
-      </div>
-
-      <div className="flex flex-wrap gap-4 w-full max-w-3xl mt-6 items-center">
-        <div className="flex items-center">
-          <label htmlFor="sort" className="mr-2 text-sm text-gray-700 dark:text-gray-300">
-            Sort:
-          </label>
-          <select
-            id="sort"
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-            className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            <option value="score-desc">Score ↓</option>
-            <option value="score-asc">Score ↑</option>
-            <option value="name-asc">Name A–Z</option>
-          </select>
-        </div>
-        <div className="flex items-center">
-          <label
-            htmlFor="stateFilter"
-            className="mr-2 text-sm text-gray-700 dark:text-gray-300"
-          >
-            Filter by state:
-          </label>
-          <select
-            id="stateFilter"
-            value={filterState}
-            onChange={(e) => setFilterState(e.target.value)}
-            className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            <option value="">All</option>
-            {availableStates.map((st) => (
-              <option key={st} value={st}>
-                {st}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {loading && (
-        <div className="mt-6 text-lg text-gray-600 dark:text-gray-400">Searching…</div>
-      )}
-      {error && (
-        <div className="mt-6 text-red-500 dark:text-red-400">{error}</div>
-      )}
-
-      {hasSearched && !loading && filteredAndSorted.length === 0 && !error && (
-        <div className={`mt-8 w-full max-w-3xl p-6 rounded-xl border text-center ${
-          indexEmpty 
-            ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-700'
-            : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
-        }`}>
-          {indexEmpty ? (
-            <>
-              <div className="text-amber-700 dark:text-amber-300 text-xl font-semibold mb-3 flex items-center justify-center gap-2">
-                <span>⚠️</span>
-                <span>Index is Empty</span>
-              </div>
-              <div className="text-amber-600 dark:text-amber-400 mb-3">
-                No records found in the search index. Please index some data first before searching.
-              </div>
+        {/* Welcome Banner */}
+        {showWelcomeBanner && (
+          <div className="mt-4 w-full max-w-4xl animate-fadeIn">
+            <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-2 border-blue-200 dark:border-blue-800 rounded-2xl p-6 shadow-2xl">
               <button
-                onClick={startBulkIndex}
-                disabled={indexing}
-                className="mt-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition inline-flex items-center gap-2"
+                onClick={dismissWelcomeBanner}
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl leading-none bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                title="Dismiss"
               >
-                <span>📤</span>
-                <span>{indexing ? 'Uploading...' : 'Index 100 Sample Records'}</span>
+                ×
               </button>
-            </>
-          ) : (
-            <>
-              <div className="text-gray-500 dark:text-gray-400 text-lg mb-2">
-                🔍 No results found for "{query}"
-              </div>
-              <div className="text-sm text-gray-400 dark:text-gray-500">
-                Try a different search term or check your spelling.
-              </div>
-            </>
-          )}
-        </div>
-      )}
-
-      <ul className="mt-8 w-full max-w-3xl space-y-4">
-        {filteredAndSorted.map((result) => (
-          <li key={result.id}>
-            <div className="p-4 sm:p-5 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 transition hover:shadow-xl">
-              <div className="flex justify-between items-center mb-2">
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 truncate">
-                  {result.person.firstName}{' '}
-                  {result.person.middleName ? `${result.person.middleName} ` : ''}
-                  {result.person.lastName}
-                </h2>
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {result.score.toFixed(2)}
-                </span>
-              </div>
-              <div className="mt-1 mb-2">
-                <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
-                  <div
-                    className="h-2 rounded-full bg-indigo-500"
-                    style={{ width: maxScore > 0 ? `${(result.score / maxScore) * 100}%` : '0%' }}
-                  ></div>
+              <div className="pr-12">
+                <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent mb-4 flex items-center gap-2">
+                  <span className="text-2xl">👋</span>
+                  Welcome to Smart Name Search!
+                </h3>
+                <div className="space-y-3 text-gray-700 dark:text-gray-300">
+                  <div className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
+                    <span className="text-2xl flex-shrink-0">⏳</span>
+                    <div>
+                      <strong className="font-semibold text-gray-900 dark:text-gray-100">First visit?</strong>
+                      <p className="text-sm mt-1">The API is hosted on Render.com and may take 1-2 minutes to wake up from cold start on first request.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-green-50 dark:bg-green-900/30 rounded-xl">
+                    <span className="text-2xl flex-shrink-0">📤</span>
+                    <div>
+                      <strong className="font-semibold text-gray-900 dark:text-gray-100">Get started:</strong>
+                      <p className="text-sm mt-1">Click the <strong>"Bulk Upload"</strong> button above to index 100 sample records into the search database.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-purple-50 dark:bg-purple-900/30 rounded-xl">
+                    <span className="text-2xl flex-shrink-0">🔍</span>
+                    <div>
+                      <strong className="font-semibold text-gray-900 dark:text-gray-100">Then search:</strong>
+                      <p className="text-sm mt-1">Once indexing completes, try searching for names like "Bob", "Elizabeth", or "John" to see the smart matching in action!</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                {(() => {
-                  const city = result.person.city || '';
-                  const state = result.person.state || '';
-                  if (city && state) return `${city}, ${state}`;
-                  if (city) return city;
-                  if (state) return state;
-                  return '—';
-                })()}
+            </div>
+          </div>
+        )}
+
+        {/* Job Status */}
+        {jobStatus && (
+          <div className="mt-4 w-full max-w-4xl animate-fadeIn">
+            <div className={`p-4 rounded-xl font-medium shadow-lg backdrop-blur-sm ${
+              jobStatus.includes('✓') ? 'bg-green-100/90 dark:bg-green-900/50 text-green-800 dark:text-green-200 border-2 border-green-300 dark:border-green-700' :
+              jobStatus.includes('✗') ? 'bg-red-100/90 dark:bg-red-900/50 text-red-800 dark:text-red-200 border-2 border-red-300 dark:border-red-700' :
+              'bg-blue-100/90 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 border-2 border-blue-300 dark:border-blue-700'
+            }`}>
+              {jobStatus}
+            </div>
+          </div>
+        )}
+
+        {/* Search Box */}
+        <div className="relative mt-8 w-full max-w-4xl">
+          <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl blur-lg opacity-75 group-hover:opacity-100 transition duration-300"></div>
+            <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-2">
+              <div className="flex items-center gap-3">
+                <div className="flex-1 relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-6 pointer-events-none">
+                    <svg
+                      className="h-6 w-6 text-gray-400 dark:text-gray-500"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.5 3a7.5 7.5 0 010 15z" />
+                    </svg>
+                  </div>
+                  <input
+                    className="block w-full pl-16 pr-6 py-4 text-lg rounded-2xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    type="text"
+                    placeholder="Search for a name..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={search}
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:focus:ring-indigo-800 transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+                >
+                  Search
+                </button>
               </div>
             </div>
-          </li>
-        ))}
-      </ul>
+          </div>
+        </div>
+
+        {/* Filters and Sort */}
+        <div className="flex flex-wrap gap-4 w-full max-w-4xl mt-8 items-center">
+          <div className="flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 py-3 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+            <label htmlFor="sort" className="font-medium text-gray-700 dark:text-gray-300">
+              Sort:
+            </label>
+            <select
+              id="sort"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              className="border-0 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium cursor-pointer"
+            >
+              <option value="score-desc">Score ↓</option>
+              <option value="score-asc">Score ↑</option>
+              <option value="name-asc">Name A–Z</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 py-3 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+            <label htmlFor="stateFilter" className="font-medium text-gray-700 dark:text-gray-300">
+              Filter:
+            </label>
+            <select
+              id="stateFilter"
+              value={filterState}
+              onChange={(e) => setFilterState(e.target.value)}
+              className="border-0 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium cursor-pointer"
+            >
+              <option value="">All States</option>
+              {availableStates.map((st) => (
+                <option key={st} value={st}>
+                  {st}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Loading State */}
+        {loading && (
+          <div className="mt-12 flex flex-col items-center gap-4 animate-fadeIn">
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-indigo-200 dark:border-indigo-900 border-t-indigo-600 dark:border-t-indigo-400 rounded-full animate-spin"></div>
+            </div>
+            <div className="text-lg font-semibold text-gray-600 dark:text-gray-400">Searching...</div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="mt-8 w-full max-w-4xl animate-fadeIn">
+            <div className="bg-red-100/90 dark:bg-red-900/50 border-2 border-red-300 dark:border-red-700 text-red-800 dark:text-red-200 p-4 rounded-xl shadow-lg backdrop-blur-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">⚠️</span>
+                <span className="font-semibold">{error}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {hasSearched && !loading && filteredAndSorted.length === 0 && !error && (
+          <div className={`mt-12 w-full max-w-4xl animate-fadeIn ${
+            indexEmpty 
+              ? 'bg-amber-100/90 dark:bg-amber-900/30 border-2 border-amber-300 dark:border-amber-700'
+              : 'bg-white/80 dark:bg-gray-800/80 border-2 border-gray-200 dark:border-gray-700'
+          } backdrop-blur-xl rounded-2xl p-8 shadow-2xl text-center`}>
+            {indexEmpty ? (
+              <>
+                <div className="text-6xl mb-4">⚠️</div>
+                <div className="text-2xl font-bold text-amber-700 dark:text-amber-300 mb-3">
+                  Index is Empty
+                </div>
+                <div className="text-amber-600 dark:text-amber-400 mb-6 text-lg">
+                  No records found in the search index. Please index some data first before searching.
+                </div>
+                <button
+                  onClick={startBulkIndex}
+                  disabled={indexing}
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-3 px-8 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800 transition-all shadow-lg hover:shadow-xl hover:scale-105 disabled:scale-100 inline-flex items-center gap-2"
+                >
+                  <span className="text-xl">📤</span>
+                  <span>{indexing ? 'Uploading...' : 'Index 100 Sample Records'}</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="text-6xl mb-4">🔍</div>
+                <div className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-3">
+                  No results found for "{query}"
+                </div>
+                <div className="text-gray-500 dark:text-gray-400 text-lg">
+                  Try a different search term or check your spelling.
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Results */}
+        <div className="mt-12 w-full max-w-4xl space-y-4">
+          {filteredAndSorted.map((result, index) => (
+            <div 
+              key={result.id}
+              className="group animate-fadeIn"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-300 overflow-hidden">
+                {/* Gradient accent on hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-pink-500/5 transition-all duration-300"></div>
+                
+                <div className="relative p-6">
+                  {/* Header with name and score */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                        {result.person.firstName.charAt(0)}{result.person.lastName.charAt(0)}
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                          {result.person.firstName}{' '}
+                          {result.person.middleName ? `${result.person.middleName} ` : ''}
+                          {result.person.lastName}
+                        </h2>
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          <span>📍</span>
+                          <span>
+                            {(() => {
+                              const city = result.person.city || '';
+                              const state = result.person.state || '';
+                              if (city && state) return `${city}, ${state}`;
+                              if (city) return city;
+                              if (state) return state;
+                              return 'Location not specified';
+                            })()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold py-2 px-4 rounded-full text-sm shadow-lg">
+                        Score: {result.score.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Score progress bar */}
+                  <div className="mt-4">
+                    <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden shadow-inner">
+                      <div
+                        className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-500 shadow-lg"
+                        style={{ width: maxScore > 0 ? `${(result.score / maxScore) * 100}%` : '0%' }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
