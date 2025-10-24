@@ -6,6 +6,9 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
+# Set environment variable to skip .csproj file copy during Docker build
+ENV DOTNET_RUNNING_IN_CONTAINER=true
+
 # Copy all project files (build context should be MeiliNameSearch)
 COPY ["src/NameSearch.Api/NameSearch.Api.csproj", "NameSearch.Api/"]
 COPY ["src/NameSearch.Domain/NameSearch.Domain.csproj", "NameSearch.Domain/"]
@@ -25,6 +28,10 @@ COPY tools/dictionaries/nicknames.json NameSearch.Api/tools/dictionaries/nicknam
 # Build and publish
 WORKDIR /src/NameSearch.Api
 RUN dotnet publish "NameSearch.Api.csproj" -c ${BUILD_CONFIGURATION} -o /app/publish /p:UseAppHost=false
+
+# Manually copy nicknames.json to the publish output
+RUN mkdir -p /app/publish/tools/dictionaries
+COPY tools/dictionaries/nicknames.json /app/publish/tools/dictionaries/nicknames.json
 
 FROM base AS final
 WORKDIR /app
