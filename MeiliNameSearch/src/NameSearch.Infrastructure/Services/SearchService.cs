@@ -95,12 +95,12 @@ namespace NameSearch.Infrastructure.Services
                 // id
                 var id = hit.TryGetProperty("id", out var idProp) ? idProp.GetString() ?? "" : "";
 
-                // person fields
+                // person fields (indexed as firstName, lastName, middleName, city, state, dob)
                 var person = new PersonRecord(
                     Id: id,
-                    FirstName: hit.TryGetProperty("first", out var f) ? f.GetString() ?? string.Empty : string.Empty,
-                    LastName:  hit.TryGetProperty("last", out var l) ? l.GetString() ?? string.Empty : string.Empty,
-                    MiddleName: hit.TryGetProperty("middlename", out var m) ? m.GetString() : null,
+                    FirstName: hit.TryGetProperty("firstName", out var f) ? f.GetString() ?? string.Empty : string.Empty,
+                    LastName:  hit.TryGetProperty("lastName", out var l) ? l.GetString() ?? string.Empty : string.Empty,
+                    MiddleName: hit.TryGetProperty("middleName", out var m) ? m.GetString() : null,
                     City:      hit.TryGetProperty("city", out var c) ? c.GetString() : null,
                     State:     hit.TryGetProperty("state", out var s) ? s.GetString() : null,
                     Dob:       ParseDate(hit.TryGetProperty("dob", out var dob) ? dob.GetString() : null)
