@@ -69,10 +69,8 @@ A **production-ready intelligent name search API** built with **.NET 9** and **M
 
 ### Architecture Flow
 
-```
-<img width="891" height="681" alt="image" src="https://github.com/user-attachments/assets/9067859c-6ea0-4eb5-bff2-8ed0310ae275" />
+<img width="891" height="681" alt="image" src="https://github.com/user-attachments/assets/f87660bc-923e-422a-9328-f02a7c078f6c" />
 
-```
 
 ## 📋 API Endpoints
 
