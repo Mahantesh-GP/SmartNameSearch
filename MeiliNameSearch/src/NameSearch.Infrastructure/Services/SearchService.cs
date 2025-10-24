@@ -61,11 +61,12 @@ namespace NameSearch.Infrastructure.Services
             // clamp limit to something sane
             var clampedLimit = Math.Clamp(limit <= 0 ? 10 : limit, 1, 200);
 
-            // 4) Call Meilisearch
+            // 4) Call Meilisearch - request ranking scores for better UI display
             var requestBody = new
             {
                 q,
-                limit = clampedLimit
+                limit = clampedLimit,
+                showRankingScore = true
             };
 
             using var resp = await _client.PostAsJsonAsync($"indexes/{IndexName}/search", requestBody);
