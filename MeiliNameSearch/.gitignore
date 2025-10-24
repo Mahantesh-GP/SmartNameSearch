@@ -23,3 +23,6 @@ coverage*.xml
 # OS files
 Thumbs.db
 .DS_Store
+
+# Node modules
+node_modules/

@@ -21,4 +21,11 @@
   <ItemGroup>
     <Folder Include="Controllers\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\tools\dictionaries\nicknames.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>tools\dictionaries\nicknames.json</Link>
+    </Content>
+  </ItemGroup>
 </Project>

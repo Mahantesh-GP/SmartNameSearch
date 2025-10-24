@@ -1,0 +1,14 @@
+# Node modules
+node_modules/
+
+# Dependencies
+package-lock.json
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# OS files
+.DS_Store
+Thumbs.db

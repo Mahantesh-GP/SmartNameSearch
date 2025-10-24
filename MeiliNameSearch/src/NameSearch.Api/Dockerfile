@@ -16,6 +16,9 @@ RUN dotnet restore NameSearch.Api/NameSearch.Api.csproj
 # Copy the rest of the source code
 COPY . .
 
+# Copy nickname dictionary from tools directory
+COPY ../../tools/dictionaries/nicknames.json /src/tools/dictionaries/
+
 # Build and publish the application
 WORKDIR /src/NameSearch.Api
 RUN dotnet publish NameSearch.Api.csproj -c Release -o /app/publish
