@@ -25,6 +25,7 @@ function App() {
     // Show banner if user hasn't dismissed it before
     return !localStorage.getItem('welcomeBannerDismissed');
   });
+  const [indexEmpty, setIndexEmpty] = useState(false);
 
   // Apply or remove the dark class on the root element when darkMode changes
   useEffect(() => {
@@ -46,11 +47,13 @@ function App() {
     if (!trimmed) {
       setResults([]);
       setHasSearched(false);
+      setIndexEmpty(false);
       return;
     }
     setLoading(true);
     setError('');
     setHasSearched(true);
+    setIndexEmpty(false);
     try {
       // Build the proxied path. Ensure apiBasePath doesn't end with a slash.
       const base = apiBasePath.endsWith('/') ? apiBasePath.slice(0, -1) : apiBasePath;
@@ -60,12 +63,37 @@ function App() {
         throw new Error('Network response was not ok');
       }
       const data = await resp.json();
-      setResults(Array.isArray(data) ? data : []);
+      const results = Array.isArray(data) ? data : [];
+      setResults(results);
+      
+      // If no results, check if index might be empty
+      if (results.length === 0) {
+        // Try a very common search to verify if index has any data
+        await checkIfIndexEmpty(base);
+      }
     } catch (e) {
       console.error(e);
       setError('Search failed. Check the API server and CORS configuration.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Check if the index is empty by trying a wildcard/common search
+  const checkIfIndexEmpty = async (base) => {
+    try {
+      // Search for very common names to check if index has data
+      const testQuery = 'a'; // Single letter should match something if index has data
+      const url = `${base}/NameSearch/search?query=${encodeURIComponent(testQuery)}&limit=1`;
+      const resp = await fetch(url, { credentials: 'same-origin' });
+      if (resp.ok) {
+        const data = await resp.json();
+        const hasData = Array.isArray(data) && data.length > 0;
+        setIndexEmpty(!hasData);
+      }
+    } catch (e) {
+      // If check fails, don't show index empty message
+      console.error('Failed to check if index is empty:', e);
     }
   };
 
@@ -330,13 +358,39 @@ function App() {
       )}
 
       {hasSearched && !loading && filteredAndSorted.length === 0 && !error && (
-        <div className="mt-8 w-full max-w-3xl p-6 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-center">
-          <div className="text-gray-500 dark:text-gray-400 text-lg mb-2">
-            🔍 No results found for "{query}"
-          </div>
-          <div className="text-sm text-gray-400 dark:text-gray-500">
-            Try a different search term or upload sample data using the Bulk Upload button.
-          </div>
+        <div className={`mt-8 w-full max-w-3xl p-6 rounded-xl border text-center ${
+          indexEmpty 
+            ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-700'
+            : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+        }`}>
+          {indexEmpty ? (
+            <>
+              <div className="text-amber-700 dark:text-amber-300 text-xl font-semibold mb-3 flex items-center justify-center gap-2">
+                <span>⚠️</span>
+                <span>Index is Empty</span>
+              </div>
+              <div className="text-amber-600 dark:text-amber-400 mb-3">
+                No records found in the search index. Please index some data first before searching.
+              </div>
+              <button
+                onClick={startBulkIndex}
+                disabled={indexing}
+                className="mt-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition inline-flex items-center gap-2"
+              >
+                <span>📤</span>
+                <span>{indexing ? 'Uploading...' : 'Index 100 Sample Records'}</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="text-gray-500 dark:text-gray-400 text-lg mb-2">
+                🔍 No results found for "{query}"
+              </div>
+              <div className="text-sm text-gray-400 dark:text-gray-500">
+                Try a different search term or check your spelling.
+              </div>
+            </>
+          )}
         </div>
       )}
 
