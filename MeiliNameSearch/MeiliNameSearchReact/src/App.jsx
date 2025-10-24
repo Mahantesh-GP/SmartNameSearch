@@ -21,6 +21,10 @@ function App() {
   const [indexing, setIndexing] = useState(false);
   const [jobStatus, setJobStatus] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
+  const [showWelcomeBanner, setShowWelcomeBanner] = useState(() => {
+    // Show banner if user hasn't dismissed it before
+    return !localStorage.getItem('welcomeBannerDismissed');
+  });
 
   // Apply or remove the dark class on the root element when darkMode changes
   useEffect(() => {
@@ -30,6 +34,11 @@ function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  const dismissWelcomeBanner = () => {
+    setShowWelcomeBanner(false);
+    localStorage.setItem('welcomeBannerDismissed', 'true');
+  };
 
   // Perform the search against the API
   const search = async () => {
@@ -63,7 +72,7 @@ function App() {
   // Trigger bulk indexing
   const startBulkIndex = async () => {
     setIndexing(true);
-    setJobStatus('Initiating bulk upload...');
+    setJobStatus('⏳ Initiating bulk upload... (This may take 1-2 minutes if the API is waking up from cold start)');
     setError('');
     try {
       const base = apiBasePath.endsWith('/') ? apiBasePath.slice(0, -1) : apiBasePath;
@@ -85,8 +94,9 @@ function App() {
       }
     } catch (e) {
       console.error(e);
-      setError('Failed to start bulk indexing. Check the API server.');
+      setError('Failed to start bulk indexing. The API may still be waking up from cold start. Please wait a moment and try again.');
       setIndexing(false);
+      setJobStatus('');
     }
   };
 
@@ -195,6 +205,39 @@ function App() {
           </button>
         </div>
       </div>
+
+      {showWelcomeBanner && (
+        <div className="mt-6 w-full max-w-3xl">
+          <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-200 dark:border-blue-700 rounded-xl p-5 shadow-md">
+            <button
+              onClick={dismissWelcomeBanner}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl leading-none"
+              title="Dismiss"
+            >
+              ×
+            </button>
+            <div className="pr-8">
+              <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-2 flex items-center gap-2">
+                👋 Welcome to Smart Name Search!
+              </h3>
+              <div className="text-sm text-blue-800 dark:text-blue-300 space-y-2">
+                <p className="flex items-start gap-2">
+                  <span className="text-base">⏳</span>
+                  <span><strong>First visit?</strong> The API is hosted on Render.com and may take 1-2 minutes to wake up from cold start on first request.</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <span className="text-base">📤</span>
+                  <span><strong>Get started:</strong> Click the <strong>"Bulk Upload"</strong> button above to index 100 sample records into the search database.</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <span className="text-base">🔍</span>
+                  <span><strong>Then search:</strong> Once indexing completes, try searching for names like "Bob", "Elizabeth", or "John" to see the smart matching in action!</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {jobStatus && (
         <div className="mt-4 w-full max-w-2xl">
