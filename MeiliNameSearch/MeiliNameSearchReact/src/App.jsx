@@ -105,7 +105,7 @@ function App() {
   // Trigger bulk indexing
   const startBulkIndex = async () => {
     setIndexing(true);
-    setJobStatus('⏳ Initiating bulk upload... (This may take 1-2 minutes if the API is waking up from cold start)');
+    setJobStatus('⏳ Loading sample data... (May take 1-2 minutes on first load)');
     setError('');
     try {
       const base = apiBasePath.endsWith('/') ? apiBasePath.slice(0, -1) : apiBasePath;
@@ -113,22 +113,26 @@ function App() {
       const url = `${base}/NameSearch/enqueue-bulk-index-sample?count=100`;
       const resp = await fetch(url, { 
         method: 'POST',
-        credentials: 'same-origin' 
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       if (!resp.ok) {
-        throw new Error('Failed to start bulk indexing');
+        const errorText = await resp.text();
+        throw new Error(`Server error: ${resp.status} - ${errorText}`);
       }
       const data = await resp.json();
       if (data.jobId) {
-        setJobStatus('Bulk upload started. Checking status...');
+        setJobStatus('✓ Sample data loading started. Checking progress...');
         pollJobStatus(data.jobId);
       } else {
-        setJobStatus('Bulk upload initiated successfully!');
+        setJobStatus('✓ Sample data added successfully!');
         setIndexing(false);
       }
     } catch (e) {
-      console.error(e);
-      setError('Failed to start bulk indexing. The API may still be waking up from cold start. Please wait a moment and try again.');
+      console.error('Bulk index error:', e);
+      setError(`Failed to load sample data: ${e.message}. The API may be starting up. Please wait 30 seconds and try again.`);
       setIndexing(false);
       setJobStatus('');
     }
@@ -151,24 +155,24 @@ function App() {
         const status = data.status || data.Status;
         
         if (status === 'Completed' || status?.startsWith('Completed:')) {
-          setJobStatus('✓ Bulk upload completed successfully!');
+          setJobStatus('✓ Sample data loaded successfully!');
           setIndexing(false);
         } else if (status === 'Failed') {
-          setJobStatus('✗ Bulk upload failed.');
+          setJobStatus('✗ Failed to load sample data.');
           setIndexing(false);
         } else if (status === 'Running') {
-          setJobStatus('⏳ Bulk upload in progress...');
+          setJobStatus('⏳ Loading sample data...');
           setTimeout(checkStatus, 2000); // Check again in 2 seconds
         } else if (status === 'Queued') {
-          setJobStatus('⏳ Bulk upload queued...');
+          setJobStatus('⏳ Queued, starting soon...');
           setTimeout(checkStatus, 2000);
         } else {
           setJobStatus(`Status: ${status || 'Unknown'}`);
           setTimeout(checkStatus, 2000);
         }
       } catch (e) {
-        console.error(e);
-        setJobStatus('Failed to check job status.');
+        console.error('Poll status error:', e);
+        setJobStatus('⚠️ Cannot check status. Data may still be loading.');
         setIndexing(false);
       }
     };
@@ -260,17 +264,18 @@ function App() {
               onClick={startBulkIndex}
               disabled={indexing}
               className="group relative bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-2 px-4 sm:py-3 sm:px-6 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800 transition-all shadow-lg hover:shadow-xl hover:scale-105 disabled:scale-100"
-              title="Upload 100 sample records to the search index"
+              title="Add 100 sample records to search"
             >
               <span className="flex items-center gap-2">
-                <span className="text-lg sm:text-xl">{indexing ? '⏳' : '📤'}</span>
-                <span className="text-sm sm:text-base">{indexing ? 'Uploading...' : 'Bulk Upload'}</span>
+                <span className="text-lg sm:text-xl">{indexing ? '⏳' : '�'}</span>
+                <span className="text-sm sm:text-base">{indexing ? 'Loading...' : 'Add Sample Data'}</span>
               </span>
             </button>
             <button
               onClick={toggleDarkMode}
               className="w-10 h-10 sm:w-12 sm:h-12 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-gray-200 dark:border-gray-700 rounded-xl text-xl sm:text-2xl focus:outline-none hover:scale-110 transition-all shadow-md hover:shadow-lg"
               title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {darkMode ? '☀️' : '🌙'}
             </button>
@@ -305,7 +310,7 @@ function App() {
                     <span className="text-2xl flex-shrink-0">📤</span>
                     <div>
                       <strong className="font-semibold text-gray-900 dark:text-gray-100">Get started:</strong>
-                      <p className="text-sm mt-1">Click the <strong>"Bulk Upload"</strong> button above to index 100 sample records into the search database.</p>
+                      <p className="text-sm mt-1">Click the <strong>"Add Sample Data"</strong> button above to load 100 sample records.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 p-3 bg-purple-50 dark:bg-purple-900/30 rounded-xl">
@@ -444,18 +449,18 @@ function App() {
               <>
                 <div className="text-6xl mb-4">⚠️</div>
                 <div className="text-2xl font-bold text-amber-700 dark:text-amber-300 mb-3">
-                  Index is Empty
+                  No Data Available
                 </div>
                 <div className="text-amber-600 dark:text-amber-400 mb-6 text-lg">
-                  No records found in the search index. Please index some data first before searching.
+                  The search index is empty. Add sample data to get started.
                 </div>
                 <button
                   onClick={startBulkIndex}
                   disabled={indexing}
                   className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-3 px-8 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800 transition-all shadow-lg hover:shadow-xl hover:scale-105 disabled:scale-100 inline-flex items-center gap-2"
                 >
-                  <span className="text-xl">📤</span>
-                  <span>{indexing ? 'Uploading...' : 'Index 100 Sample Records'}</span>
+                  <span className="text-xl">�</span>
+                  <span>{indexing ? 'Loading...' : 'Add Sample Data'}</span>
                 </button>
               </>
             ) : (
