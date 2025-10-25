@@ -12,3 +12,7 @@ package-lock.json
 # OS files
 .DS_Store
 Thumbs.db
+
+# Personal/private notes (do not commit)
+INTERVIEW_PREPARATION.md
+INTERVIEW_GUIDE.md
