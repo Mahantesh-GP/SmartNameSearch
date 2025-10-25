@@ -12,14 +12,29 @@ A **production-ready intelligent name search API** built with **.NET 9** and **M
 
 ## ✨ Features
 
+### Backend API
 - 🎯 **Smart Name Matching** - Find "Bob" when searching for "Robert", "Liz" for "Elizabeth"
 - 🔊 **Phonetic Search** - Match names that sound similar using Double Metaphone algorithm
 - 🌐 **Transitive Nickname Expansion** - Automatically expands nicknames bidirectionally
 - ⚡ **Fast Fuzzy Search** - Powered by Meilisearch with typo tolerance
 - 🔄 **Background Job Processing** - Async bulk indexing with job status tracking
-- 📊 **RESTful API** - Clean API design with Swagger documentation
+- � **Ranking Scores** - Returns relevance scores (0.0-1.0) for search results
+- �📊 **RESTful API** - Clean API design with Swagger documentation
+- 🔧 **Health Monitoring** - `/healthz` endpoint for uptime checks
 - 🐳 **Docker Ready** - Easy deployment with Docker containers
 - 🚀 **Production Deployed** - Running on Render.com with CI/CD via GitHub Actions
+
+### React Frontend UI
+- 🎨 **Modern Design** - Gradient animations, glassmorphism effects, smooth transitions
+- 📱 **Mobile Responsive** - Fully optimized for mobile, tablet, and desktop
+- 🌓 **Dark/Light Mode** - Automatic theme detection with manual toggle
+- 📄 **Pagination** - Navigate through results 10 per page (fetches 100)
+- 📊 **Score Display** - Shows match relevance as percentages (e.g., 87%)
+- 🔍 **Filters & Sorting** - Filter by state, sort by score or name
+- 📤 **Bulk Upload** - One-click sample data generation with job status tracking
+- 💾 **Welcome Banner** - First-time user guidance (dismissible)
+- ⚡ **Empty Index Detection** - Prompts to index data if search finds nothing
+- 🎯 **Progress Bars** - Visual ranking score indicators
 
 ## 🎯 Use Cases
 
@@ -78,13 +93,16 @@ A **production-ready intelligent name search API** built with **.NET 9** and **M
 
 | Endpoint | Method | Description | Example |
 |----------|--------|-------------|---------|
-| `/NameSearch/search` | GET | Smart search with nickname & phonetic matching | `?query=Bob&limit=10` |
+| `/NameSearch/search` | GET | Smart search with nickname & phonetic matching (returns ranking scores) | `?query=Bob&limit=10` |
 | `/NameSearch/index` | POST | Add/update person records synchronously | Body: `PersonRecord[]` |
-| `/NameSearch/bulk-index-from-randomuser` | POST | Fetch & index sample data (sync) | `?count=100` |
-| `/NameSearch/enqueue-bulk-index` | POST | Queue bulk indexing job (async) | `?count=100` |
+| `/NameSearch/bulk-index-from-randomuser` | POST | Fetch & index sample data from RandomUser.me (sync) | `?count=100` |
+| `/NameSearch/bulk-index-sample` | POST | Generate & index synthetic sample data (sync) | `?count=200` |
+| `/NameSearch/enqueue-bulk-index` | POST | Queue bulk indexing job using RandomUser.me (async) | `?count=100` |
+| `/NameSearch/enqueue-bulk-index-sample` | POST | Queue synthetic data generation job (async) | `?count=100` |
 | `/NameSearch/job-status/{id}` | GET | Check background job status | Returns job state |
 | `/NameSearch/index-stats` | GET | Get Meilisearch index statistics | Document count, etc. |
 | `/NameSearch/example` | GET | Returns sample PersonRecord | For testing |
+| `/healthz` | GET | Health check endpoint | Returns `{"status":"ok"}` |
 
 ### Example Requests
 
@@ -523,7 +541,26 @@ curl -X POST "http://localhost:5000/NameSearch/enqueue-bulk-index?count=50"
 dotnet run --urls http://localhost:5002
 ```
 
-## 🛣️ Roadmap
+## � Recent Updates
+
+### Latest Features (October 2025)
+- ✅ **Pagination Support** - Browse through search results 10 per page (up to 100 results)
+- ✅ **Mobile Responsiveness** - Fully responsive design optimized for all screen sizes
+- ✅ **Score Percentages** - Match relevance displayed as percentages (87% vs 0.87)
+- ✅ **Synthetic Data Seeding** - Network-independent sample data generation
+- ✅ **Background Job System** - Async bulk indexing with real-time status tracking
+- ✅ **Health Monitoring** - `/healthz` endpoint for production monitoring
+- ✅ **Dark Mode** - Automatic theme detection with manual toggle
+
+### UI/UX Improvements
+- **Mobile-first design** with responsive breakpoints (sm:640px+)
+- **Compact pagination** on mobile (← 1/5 → vs Previous Page 1 of 5 Next)
+- **Adaptive layouts** - Search button stacks below input on mobile
+- **Touch-optimized** controls with proper spacing and sizing
+- **Progress bars** showing relative match quality
+- **Empty state detection** - Prompts users to index data if search yields no results
+
+## �🛣️ Roadmap
 
 - [ ] **Vector Search** - Add embedding-based semantic search using Ollama
 - [ ] **Advanced Phonetics** - Support for multiple phonetic algorithms (Soundex, Metaphone3)
