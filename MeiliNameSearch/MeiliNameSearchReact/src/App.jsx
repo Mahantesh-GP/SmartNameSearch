@@ -473,8 +473,10 @@ function App() {
         )}
 
         {/* Results */}
-        <div className="mt-12 w-full max-w-4xl space-y-4">
-          {paginatedResults.map((result, index) => (
+        {hasSearched && paginatedResults.length > 0 && (
+          <>
+            <div className="mt-12 w-full max-w-4xl space-y-4">
+              {paginatedResults.map((result, index) => (
             <div 
               key={result.id}
               className="group animate-fadeIn"
@@ -570,6 +572,8 @@ function App() {
               <span className="sm:hidden">→</span>
             </button>
           </div>
+        )}
+          </>
         )}
       </div>
     </div>
