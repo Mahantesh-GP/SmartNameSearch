@@ -13,6 +13,11 @@ function App() {
   const [sortOption, setSortOption] = useState('score-desc');
   const [filterState, setFilterState] = useState('');
   const [darkMode, setDarkMode] = useState(() => {
+    // Check localStorage first, then fall back to system preference
+    const saved = localStorage.getItem('darkMode');
+    if (saved !== null) {
+      return saved === 'true';
+    }
     return (
       window.matchMedia &&
       window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -33,8 +38,10 @@ function App() {
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('darkMode', 'true');
     } else {
       document.documentElement.classList.remove('dark');
+      localStorage.setItem('darkMode', 'false');
     }
   }, [darkMode]);
 
@@ -105,12 +112,33 @@ function App() {
   // Trigger bulk indexing
   const startBulkIndex = async () => {
     setIndexing(true);
-    setJobStatus('⏳ Loading sample data... (May take 1-2 minutes on first load)');
+    setJobStatus('⏳ Checking index status...');
     setError('');
+    
     try {
       const base = apiBasePath.endsWith('/') ? apiBasePath.slice(0, -1) : apiBasePath;
-      // Use synthetic data endpoint for reliable indexing without external API dependencies
-      const url = `${base}/NameSearch/enqueue-bulk-index-sample?count=100`;
+      
+      // First, check if index already has data
+      const statsUrl = `${base}/NameSearch/index-stats`;
+      const statsResp = await fetch(statsUrl, { credentials: 'same-origin' });
+      
+      if (statsResp.ok) {
+        const stats = await statsResp.json();
+        const docCount = stats.numberOfDocuments || 0;
+        
+        if (docCount >= 100) {
+          setJobStatus(`ℹ️ Index already has ${docCount} records. No need to add more!`);
+          setIndexing(false);
+          setIndexEmpty(false);
+          return;
+        }
+      }
+      
+      // Proceed with indexing
+      setJobStatus('⏳ Loading sample data... (May take 1-2 minutes on first load)');
+      
+      // Use synthetic data endpoint with 5000 records
+      const url = `${base}/NameSearch/enqueue-bulk-index-sample?count=5000`;
       const resp = await fetch(url, { 
         method: 'POST',
         credentials: 'same-origin',
@@ -234,7 +262,10 @@ function App() {
   }, [filteredAndSorted]);
 
   // Toggle dark mode
-  const toggleDarkMode = () => setDarkMode((prev) => !prev);
+  const toggleDarkMode = () => {
+    console.log('Toggle dark mode clicked. Current:', darkMode);
+    setDarkMode((prev) => !prev);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950">
@@ -264,7 +295,7 @@ function App() {
               onClick={startBulkIndex}
               disabled={indexing}
               className="group relative bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-2 px-4 sm:py-3 sm:px-6 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800 transition-all shadow-lg hover:shadow-xl hover:scale-105 disabled:scale-100"
-              title="Add 100 sample records to search"
+              title="Add 5,000 sample records to search"
             >
               <span className="flex items-center gap-2">
                 <span className="text-lg sm:text-xl">{indexing ? '⏳' : '�'}</span>
@@ -310,7 +341,7 @@ function App() {
                     <span className="text-2xl flex-shrink-0">📤</span>
                     <div>
                       <strong className="font-semibold text-gray-900 dark:text-gray-100">Get started:</strong>
-                      <p className="text-sm mt-1">Click the <strong>"Add Sample Data"</strong> button above to load 100 sample records.</p>
+                      <p className="text-sm mt-1">Click the <strong>"Add Sample Data"</strong> button above to load 5,000 sample records.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 p-3 bg-purple-50 dark:bg-purple-900/30 rounded-xl">
