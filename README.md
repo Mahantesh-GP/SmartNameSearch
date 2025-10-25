@@ -368,7 +368,22 @@ MEILI_API_KEY=your-api-key
 ALLOWED_ORIGINS=http://localhost:5173;https://mahantesh-gp.github.io
 ENABLE_SWAGGER=true
 NICKNAMES_PATH=/app/tools/dictionaries/nicknames.json  # Optional
+NICKNAME_PROVIDER=hybrid  # graph | cloudflare | hybrid (default: hybrid)
+# Cloudflare Workers AI (optional - required for cloudflare/hybrid)
+CLOUDFLARE_ACCOUNT_ID=
+CLOUDFLARE_API_TOKEN=
+CLOUDFLARE_AI_MODEL=@cf/meta/llama-3-8b-instruct  # Optional model id
 ```
+
+### Nickname Expansion Providers
+
+By default the API uses a hybrid nickname expansion strategy:
+
+- `cloudflare` (preferred when configured): Expands nicknames via Cloudflare Workers AI and returns results as JSON. Uses the local graph as a fallback on errors.
+- `graph`: Use only the local, transitive nickname graph (no external calls).
+- `hybrid` (default): Prefer Cloudflare when credentials are present; otherwise fall back to the local graph.
+
+To force local-only behavior (recommended for sensitive PII), set `NICKNAME_PROVIDER=graph` in your environment.
 
 **Frontend (React):**
 ```bash

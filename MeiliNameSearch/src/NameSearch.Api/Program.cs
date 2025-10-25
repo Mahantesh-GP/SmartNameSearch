@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using NameSearch.Infrastructure.Services;
 using NameSearch.Infrastructure.Models;
 using System.Net.Http.Headers;
+using System.Net.Http;
+using Microsoft.Extensions.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,10 +64,31 @@ builder.Services.AddSingleton<NameSearch.Api.Background.JobTracker>();
 // Register custom services.
 builder.Services.AddSingleton<DoubleMetaphoneEncoder>(_ => new DoubleMetaphoneEncoder(true, 4));
 builder.Services.AddSingleton<IPhoneticEncoder>(sp => sp.GetRequiredService<DoubleMetaphoneEncoder>());
-builder.Services.AddSingleton<INicknameProvider>(_ =>
+
+// Nickname provider: prefer Cloudflare Workers AI when configured, otherwise fallback to local graph
+builder.Services.AddSingleton<INicknameProvider>(sp =>
 {
-    var path = builder.Configuration["NICKNAMES_PATH"] ?? Path.Combine(AppContext.BaseDirectory, "tools", "dictionaries", "nicknames.json");
-    return new NicknameProvider(path);
+    var cfg = builder.Configuration;
+    var path = cfg["NICKNAMES_PATH"] ?? Path.Combine(AppContext.BaseDirectory, "tools", "dictionaries", "nicknames.json");
+    var fallback = new NicknameProvider(path);
+
+    var preferred = (cfg["NICKNAME_PROVIDER"] ?? "hybrid").ToLowerInvariant();
+    var accountId = cfg["CLOUDFLARE_ACCOUNT_ID"];
+    var apiToken = cfg["CLOUDFLARE_API_TOKEN"];
+    var model = cfg["CLOUDFLARE_AI_MODEL"] ?? "@cf/meta/llama-3-8b-instruct";
+
+    if (preferred is "cloudflare" or "hybrid")
+    {
+        // Create a reusable HttpClient instance for Cloudflare API
+        var cfClient = new HttpClient
+        {
+            BaseAddress = new Uri("https://api.cloudflare.com"),
+            Timeout = TimeSpan.FromSeconds(12)
+        };
+        return new CloudflareNicknameProvider(() => cfClient, accountId, apiToken, model, fallback);
+    }
+
+    return fallback; // explicitly use local graph when NICKNAME_PROVIDER=graph
 });
 builder.Services.AddScoped<IndexService>();
 
