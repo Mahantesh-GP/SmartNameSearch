@@ -662,8 +662,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Project: [SmartNameSearch](https://github.com/Mahantesh-GP/SmartNameSearch)
 
 ---
-
-⭐ **If you find this project useful, please consider giving it a star!** ⭐
-
+ 
 Feel free to modify the code to suit your own use cases and experiments.  Contributions are welcome!# SmartNameSearch
 ![CI](https://github.com/Mahantesh-GP/SmartNameSearch/actions/workflows/deploy-react.yml/badge.svg)
