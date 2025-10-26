@@ -547,8 +547,9 @@ docker run -p 8080:8080 \
 ## 🎨 Frontend Screenshots
 
 ### Search Interface
-![Search Interface](<img width="1711" height="927" alt="image" src="https://github.com/user-attachments/assets/9ab6bb26-2727-4bec-afdb-ae4aea912d57" />
-)
+![Search Interface] 
+<img width="1711" height="927" alt="image" src="https://github.com/user-attachments/assets/9ab6bb26-2727-4bec-afdb-ae4aea912d57" />
+
 
 ### Search Results
 ![Search Results](https://github.com/user-attachments/assets/4d10aaf6-32a9-4184-b085-621b10177287)
