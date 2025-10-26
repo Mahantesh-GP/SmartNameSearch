@@ -22,6 +22,9 @@ namespace NameSearch.Infrastructure.Services
         public CloudflareNicknameProvider(Func<HttpClient> clientFactory, string? accountId, string? apiToken, string? model, INicknameProvider fallback)
         {
             _clientFactory = clientFactory;
+            // Use configured values passed in (from env vars). Previously this code used hard-coded
+            // credentials which prevented deployments from using runtime values. Keep the model
+            // default inline for backwards compatibility when not provided.
             _accountId = accountId;
             _apiToken = apiToken;
             _model = string.IsNullOrWhiteSpace(model) ? "@cf/meta/llama-3-8b-instruct" : model!;
