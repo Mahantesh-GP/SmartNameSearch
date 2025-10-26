@@ -483,6 +483,53 @@ dotnet test --filter "FullyQualifiedName~DoubleMetaphoneTests"
    - GitHub Actions automatically builds and deploys
    - Available at: `https://your-username.github.io/SmartNameSearch/`
 
+### Enabling Cloudflare Nickname Provider on Render (optional)
+
+If you want the API to expand nicknames using Cloudflare Workers AI (LLM-backed), follow these steps. If you prefer local-only nickname expansion for privacy, skip this section and set `NICKNAME_PROVIDER=graph`.
+
+Exact environment variable names (case-sensitive) to add in the Render service's Environment settings:
+
+- `NICKNAME_PROVIDER` = `cloudflare` | `hybrid` | `graph`
+  - Example: `hybrid` (preferred: Cloudflare with local fallback)
+- `CLOUDFLARE_ACCOUNT_ID` = your Cloudflare Account ID (string)
+- `CLOUDFLARE_API_TOKEN` = your Cloudflare API token (mark this as secret in Render)
+- `CLOUDFLARE_AI_MODEL` = optional — model id Cloudflare instructs you to use (e.g. `gpt-4o-mini` or `@cf/meta/llama-3-8b-instruct`)
+- `NICKNAMES_PATH` = optional — path to the nickname JSON file inside the container (defaults are provided by the app)
+
+Where to paste them in Render:
+
+1. Open your API Service in the Render dashboard.
+2. Click the "Environment" or "Environment Variables" tab.
+3. For each variable above click "Add Environment Variable" and paste the key/value exactly.
+   - Make sure to toggle "Secret" (or equivalent) for `CLOUDFLARE_API_TOKEN` and other sensitive values.
+4. Save the changes — Render will prompt that an updated deploy is required.
+5. Trigger a manual deploy (or push to `main` if auto-deploy is enabled).
+
+PowerShell verification (run after deploy completes):
+
+```powershell
+# Health check
+curl -i https://smartnamesearch.onrender.com/healthz
+
+# Example search (adjust query and path if your service base differs)
+curl -i "https://smartnamesearch.onrender.com/NameSearch/search?query=jon&limit=5"
+```
+
+What to expect:
+- `/healthz` should return HTTP 200 and a small JSON status like `{"status":"ok"}`.
+- The search endpoint should return HTTP 200 and a JSON array of results. If `NICKNAME_PROVIDER` is `hybrid` or `cloudflare`, the Cloudflare provider will be hit on first requests and results may take slightly longer while being cached by the app.
+
+Quick troubleshooting & rollback:
+- If you receive 502 or the service fails to start, open the Render deploy logs and instance logs; look for missing env var errors or startup exceptions.
+- If Cloudflare calls are causing errors (timeouts, 401), temporarily set `NICKNAME_PROVIDER=graph` and redeploy to force local-only nickname expansion.
+- Confirm `CLOUDFLARE_API_TOKEN` has correct permissions and has not expired; reduce scope to least-privilege once validated.
+
+Security & operational notes:
+- Mark the Cloudflare API token as secret in Render. Do not commit tokens to source control.
+- If you process real PII, prefer `NICKNAME_PROVIDER=graph` or ensure you have user consent and a privacy policy before sending PII to external LLMs.
+- For scale, consider a shared cache (Redis) so multiple API instances share nickname expansion results and avoid repeated LLM calls.
+
+
 ### Docker Build
 
 ```bash
