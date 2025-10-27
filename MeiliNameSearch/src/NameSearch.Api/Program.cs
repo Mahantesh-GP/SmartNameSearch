@@ -73,9 +73,9 @@ builder.Services.AddSingleton<INicknameProvider>(sp =>
     var fallback = new NicknameProvider(path);
 
     var preferred = (cfg["NICKNAME_PROVIDER"] ?? "hybrid").ToLowerInvariant();
-    var accountId = cfg["CLOUDFLARE_ACCOUNT_ID"];
-    var apiToken = cfg["CLOUDFLARE_API_TOKEN"];
-    var model = cfg["CLOUDFLARE_AI_MODEL"] ?? "@cf/meta/llama-3-8b-instruct";
+    var accountId = (cfg["CLOUDFLARE_ACCOUNT_ID"] ?? "6dfaee7cace0f8e0d65020553a7d6e8e");
+    var apiToken = (cfg["CLOUDFLARE_API_TOKEN"] ?? "tf8srDsT9-ZGbdfmRCRgC1L9pLxNOaBW5F6OJn5e");
+    var model = (cfg["CLOUDFLARE_AI_MODEL"] ?? "@cf/meta/llama-3-8b-instruct");
 
     if (preferred is "cloudflare" or "hybrid")
     {
@@ -133,5 +133,36 @@ app.MapControllers();
 
 // Lightweight health endpoint
 app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }));
+
+// Development-only debug endpoint that returns non-secret configuration flags.
+// This helps local debugging without exposing secrets. Enabled only when ASPNETCORE_ENVIRONMENT=Development.
+if (app.Environment.IsDevelopment())
+{
+    app.MapGet("/debug/config", (IConfiguration cfg) =>
+    {
+        var provider = cfg["NICKNAME_PROVIDER"] ?? "hybrid";
+        var meiliHost = cfg["MEILI_HOST"] ?? "(default)";
+        var meiliKeyPresent = !string.IsNullOrWhiteSpace(cfg["MEILI_API_KEY"]);
+        var cfConfigured = !string.IsNullOrWhiteSpace(cfg["CLOUDFLARE_ACCOUNT_ID"]) && !string.IsNullOrWhiteSpace(cfg["CLOUDFLARE_API_TOKEN"]);
+        return Results.Ok(new
+        {
+            NicknameProvider = provider,
+            MeiliHost = meiliHost,
+            MeiliApiKeyPresent = meiliKeyPresent,
+            CloudflareConfigured = cfConfigured
+        });
+    });
+}
+
+// Log selected configuration summary (safe: do not print secrets)
+{
+    var cfgCheck = app.Configuration;
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    var provider = cfgCheck["NICKNAME_PROVIDER"] ?? "hybrid";
+    var meiliHost = cfgCheck["MEILI_HOST"] ?? "(default)";
+    var meiliKeyPresent = !string.IsNullOrWhiteSpace(cfgCheck["MEILI_API_KEY"]);
+    var cfConfigured = !string.IsNullOrWhiteSpace(cfgCheck["CLOUDFLARE_ACCOUNT_ID"]) && !string.IsNullOrWhiteSpace(cfgCheck["CLOUDFLARE_API_TOKEN"]);
+    logger.LogInformation("Startup config: NICKNAME_PROVIDER={provider}, MEILI_HOST={host}, MEILI_API_KEY_PRESENT={hasKey}, CLOUDFLARE_CONFIGURED={cf}", provider, meiliHost, meiliKeyPresent, cfConfigured);
+}
 
 app.Run();

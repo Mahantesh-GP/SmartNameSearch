@@ -75,13 +75,30 @@ namespace NameSearch.Infrastructure.Services
 
                 if (!resp.IsSuccessStatusCode)
                 {
+                    // Log diagnostic info (avoid printing the API token)
+                    try
+                    {
+                        Console.WriteLine($"Cloudflare call failed: {resp.RequestMessage?.Method} {resp.RequestMessage?.RequestUri} -> {(int)resp.StatusCode} {resp.ReasonPhrase}");
+                        Console.WriteLine($"Cloudflare response body: {content}");
+                    }
+                    catch { }
+
                     // Try alternate "input" payload once
                     var prompt = $"Expand common English nicknames for the personal name '{name}'. Only output minified JSON: {{\"canonical\": string, \"nicknames\": string[]}}.";
                     var inputPayload = new { input = prompt, temperature = 0.1, max_tokens = 128 };
                     using var resp2 = client.PostAsJsonAsync(path, inputPayload).GetAwaiter().GetResult();
                     content = resp2.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
                     if (!resp2.IsSuccessStatusCode)
+                    {
+                        try
+                        {
+                            Console.WriteLine($"Cloudflare fallback call failed: {resp2.RequestMessage?.Method} {resp2.RequestMessage?.RequestUri} -> {(int)resp2.StatusCode} {resp2.ReasonPhrase}");
+                            Console.WriteLine($"Cloudflare response body: {content}");
+                        }
+                        catch { }
                         return Fallback(name);
+                    }
                 }
 
                 // Cloudflare Workers AI commonly returns { success, result: { response: "..." } }

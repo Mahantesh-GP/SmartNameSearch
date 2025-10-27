@@ -16,3 +16,6 @@ Thumbs.db
 # Personal/private notes (do not commit)
 INTERVIEW_PREPARATION.md
 INTERVIEW_GUIDE.md
+
+# Local development settings (do NOT commit secrets)
+MeiliNameSearch/src/NameSearch.Api/appsettings.Development.json
