@@ -7,7 +7,7 @@ A **production-ready intelligent name search API** built with **.NET 9** and **M
 ## 🌟 Live Demo
 
 - **Frontend:** [https://mahantesh-gp.github.io/SmartNameSearch/](https://mahantesh-gp.github.io/SmartNameSearch/)
-- **Dashboard:** [https://mahantesh-gp.github.io/meili-mini-dashboard/](https://mahantesh-gp.github.io/meili-mini-dashboard/)
+- **Dashboard:** [https://mahantesh-gp.github.io/SmartNameSearch/dashboard/](https://mahantesh-gp.github.io/SmartNameSearch/dashboard/)
 - **API:** [https://smartnamesearch.onrender.com](https://smartnamesearch.onrender.com)
 - **Swagger UI:** [https://smartnamesearch.onrender.com/swagger](https://smartnamesearch.onrender.com/swagger)
 
@@ -354,6 +354,10 @@ docker compose up -d
 # - Main UI: http://localhost:3000  
 # - Dashboard: http://localhost:3001
 # - MeiliSearch: http://localhost:7700
+
+# Production URLs:
+# - Main App: https://mahantesh-gp.github.io/SmartNameSearch/
+# - Dashboard: https://mahantesh-gp.github.io/SmartNameSearch/dashboard/
 ```
 
 #### Option 2: Run API Locally (without Docker)
@@ -543,9 +547,9 @@ dotnet test --filter "FullyQualifiedName~DoubleMetaphoneTests"
    - Available at: `https://your-username.github.io/SmartNameSearch/`
 
 5. **Deploy Dashboard to GitHub Pages:**
-   - Create separate repository for dashboard or use repository dispatch
-   - Configure environment variables for production
-   - Available at: `https://your-username.github.io/meili-mini-dashboard/`
+   - Dashboard deploys automatically with main app
+   - Configure VITE_MEILI_API_KEY repository secret for production
+   - Available at: `https://your-username.github.io/SmartNameSearch/dashboard/`
 
 ### Enabling Cloudflare Nickname Provider on Render (optional)
 

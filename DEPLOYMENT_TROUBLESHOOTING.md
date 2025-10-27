@@ -100,7 +100,8 @@ MEILI_HTTP_CORS_ORIGIN=https://your-username.github.io
 
 ### Verify Deployment:
 After successful deployment, dashboard should be available at:
-`https://your-username.github.io/SmartNameSearch/`
+- **Main App**: `https://mahantesh-gp.github.io/SmartNameSearch/`
+- **Dashboard**: `https://mahantesh-gp.github.io/SmartNameSearch/dashboard/`
 
 ## 🛠️ **Manual Deployment (Alternative)**
 

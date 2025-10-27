@@ -57,7 +57,7 @@ docker build -t dashboard . && docker run -p 8080:80 --env-file .env dashboard
 
 ## 🌟 Live URLs
 - **Main App**: https://mahantesh-gp.github.io/SmartNameSearch/
-- **Dashboard**: https://mahantesh-gp.github.io/meili-mini-dashboard/ (after setup)
+- **Dashboard**: https://mahantesh-gp.github.io/SmartNameSearch/dashboard/
 - **API**: https://smartnamesearch.onrender.com
 
 ## 🔧 Configuration
@@ -88,10 +88,10 @@ SmartNameSearch/
    # Visit http://localhost:3001 for dashboard
    ```
 
-2. **Deploy dashboard separately**:
-   - Create repository secrets for VITE_MEILI_API_KEY
-   - Push to main branch for automatic deployment
-   - Access at https://your-username.github.io/meili-mini-dashboard/
+2. **Deploy dashboard with main app**:
+   - Dashboard deploys automatically with main search app
+   - Configure VITE_MEILI_API_KEY repository secret (optional)
+   - Access at https://mahantesh-gp.github.io/SmartNameSearch/dashboard/
 
 3. **Customize as needed**:
    - Modify dashboard components in `src/components/`
