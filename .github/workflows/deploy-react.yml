@@ -58,13 +58,35 @@ jobs:
         working-directory: MeiliNameSearch/MeiliNameSearchReact
         run: npm ci
 
-      - name: Build
+      - name: Build Main App
         working-directory: MeiliNameSearch/MeiliNameSearchReact
         run: npm run build
+
+      - name: Install Dashboard Dependencies
+        working-directory: meili-mini-dashboard
+        run: npm ci
+
+      - name: Build Dashboard
+        working-directory: meili-mini-dashboard
+        env:
+          VITE_MEILI_HOST: https://meilisearch-latest-mhph.onrender.com
+          VITE_MEILI_API_KEY: demo-key-please-configure-in-repository-secrets
+        run: npm run build
+
+      - name: Prepare Combined Deployment
+        run: |
+          mkdir -p combined-dist
+          # Copy main app to root (keep existing URL working)
+          cp -r MeiliNameSearch/MeiliNameSearchReact/dist/* combined-dist/
+          # Copy dashboard to /dashboard subdirectory
+          mkdir -p combined-dist/dashboard
+          cp -r meili-mini-dashboard/dist/* combined-dist/dashboard/
+          # Add dashboard link to main app (optional)
+          echo "Dashboard available at: $(pwd)/combined-dist/dashboard/"
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.4.0
         with:
           branch: gh-pages
-          folder: MeiliNameSearch/MeiliNameSearchReact/dist
+          folder: combined-dist
           clean: true

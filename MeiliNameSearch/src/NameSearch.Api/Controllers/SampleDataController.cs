@@ -31,7 +31,7 @@ namespace NameSearch.Api.Controllers
         /// </summary>
         /// <param name="count">Number of sample users to generate (max 5000).</param>
         [HttpPost("bulk-index-sample")]
-        public async Task<IActionResult> BulkIndexSample([FromQuery] int count = 100)
+        public async Task<IActionResult> BulkIndexSample([FromQuery] int count = 1000)
         {
             if (count <= 0) return BadRequest("Count must be > 0");
             if (count > 5000) return BadRequest("Count must be <= 5000");
@@ -87,7 +87,7 @@ namespace NameSearch.Api.Controllers
         /// Useful as a reliable alternative to RandomUser API.
         /// </summary>
         [HttpPost("enqueue-bulk-index-sample")]
-        public async Task<IActionResult> EnqueueBulkIndexSample([FromQuery] int count = 100)
+        public async Task<IActionResult> EnqueueBulkIndexSample([FromQuery] int count = 1000)
         {
             if (count <= 0 || count > 5000) return BadRequest("Count must be 1..5000");
             var jobId = Guid.NewGuid().ToString();

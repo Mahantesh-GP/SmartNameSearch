@@ -69,7 +69,7 @@ namespace NameSearch.Infrastructure.Services
                     max_tokens = 128
                 };
 
-                var path = $"/client/v4/accounts/{_accountId}/ai/run/{Uri.EscapeDataString(_model)}";
+                var path = "https://api.cloudflare.com/client/v4/accounts/6dfaee7cace0f8e0d65020553a7d6e8e/ai/run/@cf/meta/llama-3-8b-instruct";
                 using var resp = client.PostAsJsonAsync(path, chatPayload).GetAwaiter().GetResult();
                 string content = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
