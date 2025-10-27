@@ -17,5 +17,14 @@ Thumbs.db
 INTERVIEW_PREPARATION.md
 INTERVIEW_GUIDE.md
 
+# Personal documents (NEVER commit)
+*.pdf
+*.doc
+*.docx
+CV*
+Resume*
+*resume*
+*cv*
+
 # Local development settings (do NOT commit secrets)
 MeiliNameSearch/src/NameSearch.Api/appsettings.Development.json
