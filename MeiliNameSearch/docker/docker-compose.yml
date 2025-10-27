@@ -57,6 +57,20 @@ services:
     depends_on:
       - namesearch-api
 
+  meili-dashboard:
+    build:
+      context: ../../meili-mini-dashboard
+      dockerfile: Dockerfile
+    container_name: meili-dashboard
+    environment:
+      # Dashboard connects directly to Meilisearch
+      VITE_MEILI_HOST: http://meilisearch:7700
+      VITE_MEILI_API_KEY: dev_key
+    ports:
+      - "3001:80"
+    depends_on:
+      - meilisearch
+
 volumes:
   meili_data:
     driver: local

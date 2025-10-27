@@ -7,6 +7,7 @@ A **production-ready intelligent name search API** built with **.NET 9** and **M
 ## 🌟 Live Demo
 
 - **Frontend:** [https://mahantesh-gp.github.io/SmartNameSearch/](https://mahantesh-gp.github.io/SmartNameSearch/)
+- **Dashboard:** [https://mahantesh-gp.github.io/meili-mini-dashboard/](https://mahantesh-gp.github.io/meili-mini-dashboard/)
 - **API:** [https://smartnamesearch.onrender.com](https://smartnamesearch.onrender.com)
 - **Swagger UI:** [https://smartnamesearch.onrender.com/swagger](https://smartnamesearch.onrender.com/swagger)
 
@@ -35,6 +36,17 @@ A **production-ready intelligent name search API** built with **.NET 9** and **M
 - 💾 **Welcome Banner** - First-time user guidance (dismissible)
 - ⚡ **Empty Index Detection** - Prompts to index data if search finds nothing
 - 🎯 **Progress Bars** - Visual ranking score indicators
+
+### MeiliSearch Management Dashboard
+- 🗂️ **Index Management** - Browse and manage all MeiliSearch indexes
+- 📄 **Document Browser** - View, search, and paginate through documents
+- 📊 **Statistics Dashboard** - Real-time index stats, document counts, and performance metrics  
+- 🔍 **Advanced Search** - Test search queries directly against your indexes
+- 🎨 **Modern React UI** - Built with React 18, TypeScript, and Tailwind CSS
+- 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
+- 🌓 **Theme Support** - Light and dark mode with system preference detection
+- ⚡ **Real-time Updates** - Live data refresh with React Query
+- 🔧 **Easy Configuration** - Simple environment variable setup
 
 ## 🎯 Use Cases
 
@@ -194,6 +206,24 @@ SmartNameSearch/
 │   ├── Dockerfile                       # Nginx-based production build
 │   └── nginx.conf
 │
+├── meili-mini-dashboard/                # 🎛️ MeiliSearch Management Dashboard
+│   ├── src/
+│   │   ├── App.tsx                      # Main dashboard app
+│   │   ├── components/                  # React components
+│   │   │   ├── DocumentBrowser.tsx      # Document viewer/search
+│   │   │   ├── IndexList.tsx            # Index management
+│   │   │   ├── SearchBar.tsx            # Search interface
+│   │   │   ├── StatsDashboard.tsx       # Analytics dashboard
+│   │   │   └── UI.tsx                   # Shared UI components
+│   │   ├── contexts/                    # React contexts
+│   │   │   ├── NotificationContext.tsx  # Toast notifications
+│   │   │   └── ThemeContext.tsx         # Theme management
+│   │   └── lib/
+│   │       └── meili.ts                 # MeiliSearch client
+│   ├── Dockerfile                       # Production build
+│   ├── package.json                     # Dependencies
+│   └── README.md                        # Dashboard documentation
+│
 └── README.md                            # This file
 ```
 
@@ -315,12 +345,15 @@ User Request → JobTracker (Queued) → BackgroundQueue
 git clone https://github.com/Mahantesh-GP/SmartNameSearch.git
 cd SmartNameSearch/MeiliNameSearch
 
-# Start Meilisearch and API
+# Start all services (API, UI, Dashboard, MeiliSearch)
 cd docker
 docker compose up -d
 
-# API available at: http://localhost:5000
-# Meilisearch at: http://localhost:7700
+# Services available at:
+# - API: http://localhost:5000
+# - Main UI: http://localhost:3000  
+# - Dashboard: http://localhost:3001
+# - MeiliSearch: http://localhost:7700
 ```
 
 #### Option 2: Run API Locally (without Docker)
@@ -346,6 +379,7 @@ dotnet run --urls http://localhost:5002
 #### Option 3: Frontend Development
 
 ```bash
+# Main search frontend
 cd MeiliNameSearchReact
 
 # Install dependencies
@@ -355,6 +389,25 @@ npm install
 npm run dev
 
 # Frontend available at: http://localhost:5173
+```
+
+#### Option 4: Dashboard Development
+
+```bash
+# MeiliSearch management dashboard
+cd meili-mini-dashboard
+
+# Install dependencies
+npm install
+
+# Copy environment file and configure
+cp .env.example .env
+# Edit .env file with your MeiliSearch details
+
+# Start dev server
+npm run dev
+
+# Dashboard available at: http://localhost:5173
 ```
 
 ### Configuration
@@ -388,6 +441,12 @@ To force local-only behavior (recommended for sensitive PII), set `NICKNAME_PROV
 **Frontend (React):**
 ```bash
 VITE_API_BASE_URL=https://smartnamesearch.onrender.com
+```
+
+**Dashboard (meili-mini-dashboard):**
+```bash
+VITE_MEILI_HOST=https://meilisearch-latest-mhph.onrender.com
+VITE_MEILI_API_KEY=your-search-key  # Use search-only key for security
 ```
 
 ## 📊 Sample Data
@@ -482,6 +541,11 @@ dotnet test --filter "FullyQualifiedName~DoubleMetaphoneTests"
    - Push to `main` branch
    - GitHub Actions automatically builds and deploys
    - Available at: `https://your-username.github.io/SmartNameSearch/`
+
+5. **Deploy Dashboard to GitHub Pages:**
+   - Create separate repository for dashboard or use repository dispatch
+   - Configure environment variables for production
+   - Available at: `https://your-username.github.io/meili-mini-dashboard/`
 
 ### Enabling Cloudflare Nickname Provider on Render (optional)
 
