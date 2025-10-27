@@ -77,8 +77,9 @@ jobs:
         working-directory: meili-mini-dashboard
         env:
           VITE_MEILI_HOST: https://meilisearch-latest-mhph.onrender.com
-          VITE_MEILI_API_KEY: demo-key-please-configure-in-repository-secrets
+          VITE_MEILI_API_KEY: ${{ secrets.VITE_MEILI_API_KEY || 'f366fe5896d3f3ef6713d68ed59ef829' }}
         run: |
+          echo "Building dashboard with API key: ${VITE_MEILI_API_KEY:0:10}..." 
           # Build dashboard with correct base path for /dashboard/ subdirectory
           npm run build -- --base=/SmartNameSearch/dashboard/
 
