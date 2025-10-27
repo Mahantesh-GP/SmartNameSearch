@@ -1,8 +1,8 @@
 # Node modules
 node_modules/
 
-# Dependencies
-package-lock.json
+# Dependencies (only ignore in specific locations if needed)
+# package-lock.json - DO NOT ignore globally, needed for builds
 
 # Visual Studio
 .vs/
