@@ -42,15 +42,19 @@ jobs:
       - name: Build dashboard
         working-directory: meili-mini-dashboard
         env:
-          # Configure for GitHub Pages deployment
-          VITE_MEILI_HOST: ${{ vars.VITE_MEILI_HOST || 'https://meilisearch-latest-mhph.onrender.com' }}
-          VITE_MEILI_API_KEY: ${{ secrets.VITE_MEILI_API_KEY }}
+          VITE_MEILI_HOST: https://meilisearch-latest-mhph.onrender.com
+          VITE_MEILI_API_KEY: demo-key-please-configure-in-repository-secrets
         run: |
+          echo "Building dashboard..."
+          echo "VITE_MEILI_HOST=$VITE_MEILI_HOST"
+          echo "Using demo API key - configure VITE_MEILI_API_KEY secret for production"
           npm run build
           # Create .nojekyll to ensure GitHub Pages works with SPA routing
           touch dist/.nojekyll
           # Copy index.html to 404.html for SPA routing
           cp dist/index.html dist/404.html
+          echo "Build complete. Output:"
+          ls -la dist/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
