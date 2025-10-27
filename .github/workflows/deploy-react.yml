@@ -78,18 +78,38 @@ jobs:
         env:
           VITE_MEILI_HOST: https://meilisearch-latest-mhph.onrender.com
           VITE_MEILI_API_KEY: demo-key-please-configure-in-repository-secrets
-        run: npm run build
+        run: |
+          # Build dashboard with correct base path for /dashboard/ subdirectory
+          npm run build -- --base=/SmartNameSearch/dashboard/
 
       - name: Prepare Combined Deployment
         run: |
+          echo "=== Preparing combined deployment ==="
           mkdir -p combined-dist
+          
           # Copy main app to root (keep existing URL working)
+          echo "Copying main app..."
           cp -r MeiliNameSearch/MeiliNameSearchReact/dist/* combined-dist/
+          
           # Copy dashboard to /dashboard subdirectory
+          echo "Copying dashboard..."
           mkdir -p combined-dist/dashboard
           cp -r meili-mini-dashboard/dist/* combined-dist/dashboard/
-          # Add dashboard link to main app (optional)
-          echo "Dashboard available at: $(pwd)/combined-dist/dashboard/"
+          
+          # Debug: Show what was copied
+          echo "=== Main app files ==="
+          ls -la combined-dist/ | head -10
+          echo "=== Dashboard files ==="
+          ls -la combined-dist/dashboard/ | head -10
+          
+          # Verify dashboard index.html exists
+          if [ -f "combined-dist/dashboard/index.html" ]; then
+            echo "✅ Dashboard index.html found"
+          else
+            echo "❌ Dashboard index.html NOT found"
+            echo "Contents of dashboard dist:"
+            ls -la meili-mini-dashboard/dist/
+          fi
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.4.0
