@@ -616,7 +616,11 @@ docker run -p 8080:8080 \
 
 ### Search Interface
 ![Search Interface] 
-<img width="1711" height="927" alt="image" src="https://github.com/user-attachments/assets/9ab6bb26-2727-4bec-afdb-ae4aea912d57" />
+<img width="1270" height="832" alt="image" src="https://github.com/user-attachments/assets/9ab0fc8f-3d3a-4e06-b84b-c1d871046d9f" />
+
+
+### Meilisearch Custom Dashboard
+<img width="1723" height="922" alt="image" src="https://github.com/user-attachments/assets/70965daf-29d9-4ebc-bd5c-d0c972eb76e0" />
 
 
 ### Search Results
